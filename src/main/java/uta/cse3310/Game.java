@@ -5,6 +5,8 @@ import java.time.Instant;
 public class Game {
     public Instant timeOfGameStart;
     public Instant timeOfLastFind;
+    public User[] usersPlaying;
+    public Grid grid;
 
     public void addPointsToUser(User user) {
 

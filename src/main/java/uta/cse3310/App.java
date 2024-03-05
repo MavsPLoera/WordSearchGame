@@ -40,6 +40,7 @@ package uta.cse3310;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import org.java_websocket.WebSocket;
@@ -60,6 +61,10 @@ public class App extends WebSocketServer {
   public App(int port, Draft_6455 draft) {
     super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
   }
+
+  public ArrayList<User> onlineUsers;
+  public Leaderboard leaderboard;
+  public ArrayList<Game> activeGames;
 
   public User createUser() {
     throw new UnsupportedOperationException();
