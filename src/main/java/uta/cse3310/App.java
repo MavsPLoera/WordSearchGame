@@ -65,6 +65,7 @@ public class App extends WebSocketServer {
   public ArrayList<User> onlineUsers;
   public Leaderboard leaderboard;
   public ArrayList<Game> activeGames;
+  public Lobby[] lobbies;
 
   public User createUser() {
     throw new UnsupportedOperationException();
