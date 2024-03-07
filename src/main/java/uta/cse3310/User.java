@@ -6,19 +6,13 @@ public class User {
     public String name;
     // 0 outside of a game
     public int color;
-    // 0 outside of a game
-    public int score;
-    public int gameScore;
+    public int currentGmeScore;
     // null when user is disconnected
     public WebSocket socket;
     // null when not playing a game
     public Game currentGame;
 
-    public void addToScore(int value) {
-
-    }
-
-    public void addToGameScore(int value) {
+    public void addToCurrentScore(int value) {
 
     }
 }
