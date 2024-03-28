@@ -14,6 +14,6 @@ public class User {
     public Point selectedPoint;
 
     public void addToCurrentScore(int value) {
-
+        currentGameScore += value; 
     }
 }
