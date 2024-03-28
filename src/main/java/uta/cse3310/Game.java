@@ -13,9 +13,6 @@ public class Game {
     {
         players = new ArrayList<User>(lobby);
 
-        //Set players color
-        User setPlayerColor = null;
-
         //Set colors
         for(int i = 0; i < players.size(); i++)
         {
@@ -26,11 +23,6 @@ public class Game {
         grid = Grid.createGrid(20, 20);
 
         //Set up timers
-    }
-
-    public void addPointsToUser(User user, int wordLength) {
-        //Might want to add a multiplier for more dopamine for the users when a word is found.
-        user.currentGameScore += wordLength;
     }
 
     public void displayHint() {
@@ -45,7 +37,7 @@ public class Game {
             attempter.addToCurrentScore(wordFound.length());
 
             //Removes word from the wordlist and changes the word to "is found"
-            grid.wordFound(start, end);
+            grid.wordFound(start, end, attempter.color);
         }
         else
         {
