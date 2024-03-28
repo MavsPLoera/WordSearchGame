@@ -22,7 +22,7 @@ public class Grid {
         throw new UnsupportedOperationException();
     }
 
-    public void wordFound(Point start, Point end) {
+    public void wordFound(Point start, Point end, int color) {
 
     }
 
