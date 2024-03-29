@@ -39,15 +39,22 @@
 package uta.cse3310;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
+
+import uta.cse3310.Events.JoinLobbyRequest;
+import uta.cse3310.Events.UserLoginRequest;
 
 public class App extends WebSocketServer {
     public App(int port) {
@@ -64,26 +71,27 @@ public class App extends WebSocketServer {
 
     public ArrayList<User> onlineUsers = new ArrayList<>();
     public ArrayList<User> allUsers = new ArrayList<>();
-    public ArrayList<Game> activeGames = new ArrayList<>();
+    public static ArrayList<Game> activeGames = new ArrayList<>();
     public Lobby[] lobbies = new Lobby[3];
+
+    private Gson gson = new Gson();
 
     public static String[] words;
 
-    public User createUser(String name, WebSocket socket) {
+    public User createUser(String name) {
         for (var onlineUser : onlineUsers) {
             if (onlineUser.name.equals(name))
                 return null;
         }
+        for (var offlineUser : allUsers) {
+            if (offlineUser.name.equals(name))
+                return offlineUser;
+        }
 
         var user = new User();
         user.name = name;
-        user.socket = socket;
-        socket.setAttachment(user);
+        allUsers.add(user);
         return user;
-    }
-
-    public void removeUser(User user) {
-
     }
 
     public void addToLobby(Lobby lobby, User user) {
@@ -96,7 +104,8 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-
+        // send all the data needed to render the lobby screen:
+        // user list, 
     }
 
     @Override
@@ -106,7 +115,28 @@ public class App extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-
+        User user = conn.getAttachment();
+        var parser = JsonParser.parseString(message);
+        var object = parser.getAsJsonObject();
+        switch (object.get("type").getAsString())
+        {
+            case "UserLoginRequest":
+                var loginEvent = gson.fromJson(object.get("eventData"), UserLoginRequest.class);
+                user = createUser(loginEvent.name);
+                if (user == null) {
+                    conn.send("nuh uh");
+                } else {
+                    user.socket = conn;
+                    conn.setAttachment(user);
+                    onlineUsers.add(user);
+                }
+                break;
+            case "JoinLobbyRequest":
+                var lobbyJoinEvent = gson.fromJson(object.get("eventData"), JoinLobbyRequest.class);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -136,6 +166,20 @@ public class App extends WebSocketServer {
         A.setReuseAddr(true);
         A.start();
         System.out.println("websocket Server started on port: " + port);
+
+        Timer GameStart = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run(){    //Prevent gameover from running twice
+                for(Game games: activeGames)
+                {
+                    games.tick();
+                }
+            }
+        };
+
+        //Count down timer for Game
+        GameStart.scheduleAtFixedRate(task, 0 , 1000);
 
     }
 }

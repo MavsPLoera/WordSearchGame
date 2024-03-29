@@ -1,0 +1,55 @@
+.box1 {
+    background-color: lightblue;
+    height: 800px; 
+    width: 800px;
+    margin-right: 20px;
+}
+
+.box2 {
+    background-color: lightgreen;
+    height: 800px;
+    width: 300px;
+   }
+.display{
+    display: block;
+}
+.hide{
+    display: none;
+}
+.button{
+    background-image: conic-gradient(
+        #e63946 0deg,
+        #e63946 120deg, /* First slice */
+        #f1faee 120deg,
+        #f1faee 240deg, /* Second slice */
+        #a8dadc 240deg,
+        #a8dadc 360deg /* Third slice */
+    );
+    background-color: rgb(43, 0, 255);
+    color: antiquewhite;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
+    
+
+}
+.box1 .button,
+.box2 .button {
+    margin-top: 10px;
+}
+
+#gameGrid{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* .grid-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: "2px";
+} */

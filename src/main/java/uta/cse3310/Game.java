@@ -1,11 +1,8 @@
 package uta.cse3310;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Game {
-    public Timer GameStart;
     public ArrayList<User> players;
     public Grid grid;
     public int totalGameTime = 300; //Timer set for 5 minutes
@@ -22,43 +19,33 @@ public class Game {
         }
 
         grid = Grid.createGrid(20, 20);
-
-        //Set up timers. Need to think about case of when all the words are found.
-        GameStart = new Timer();
-
-        TimerTask task = new TimerTask() {
-
-            @Override
-            public void run(){    //Prevent gameover from running twice
-                if(totalGameTime == 0) //add something that checks || wordList == 0
-                    gameOver();
-                    GameStart.cancel();
-
-                if(((totalGameTime % 30) == 0) && (totalGameTime != 300))
-                    displayHint();
-
-                System.out.println("Countdown timer: ");
-                totalGameTime--;   
-            }
-        };
-
-        //Count down timer for Game
-        GameStart.scheduleAtFixedRate(task, 0 , 1000);
     }
 
     public void gameOver(){
+        for(User temp: players)
+        {
+            temp.addGameScoreToTotalScore();
+            temp.currentGame = null;
+        }
+        
+        //Have just in case enhanced for loop doesnt work properlly
+        /*
         User temp = new User(); //store player into temp User
+
         for(int i = 0; i < players.size(); i++)
         {
             temp = players.get(i);
-            temp.currentGame = null;
             temp.addGameScoreToTotalScore();
-        }
+            temp.currentGame = null;
+        }*/
     }
 
     public void displayHint() {
         //Find word in the current word list
-        //Call addselection 
+        //Call addselection
+        //Change 0 to a random number generator between 0 and the size of wordList
+        //Not finished but example on how to call
+        grid.addSelection( grid.wordIndices[0].start, 5); //5 will be the hint color
     }
 
     public void validateAttempt(User attempter, Point start, Point end) {
@@ -97,5 +84,16 @@ public class Game {
             grid.addSelection(selection, user.color);
             user.selectedPoint = selection;
         }
+    }
+
+    //Will be used for one timer that is implemented in App. Might have issue with the game time being negative.
+    public void tick() {
+        if(totalGameTime == 0) //add something that checks || wordList == 0
+            gameOver();
+
+        if(((totalGameTime % 30) == 0) && (totalGameTime != 300))
+            displayHint();
+
+        totalGameTime--; 
     }
 }
