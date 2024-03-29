@@ -1,13 +1,14 @@
 package uta.cse3310;
 
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
-    public Instant timeOfGameStart;
-    public Instant timeOfLastFind;
+    public Timer GameStart;
     public ArrayList<User> players;
     public Grid grid;
+    public int totalGameTime = 300; //Timer set for 5 minutes
 
     public Game(ArrayList<User> lobby)
     {
@@ -22,11 +23,42 @@ public class Game {
 
         grid = Grid.createGrid(20, 20);
 
-        //Set up timers
+        //Set up timers. Need to think about case of when all the words are found.
+        GameStart = new Timer();
+
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run(){    //Prevent gameover from running twice
+                if(totalGameTime == 0) //add something that checks || wordList == 0
+                    gameOver();
+                    GameStart.cancel();
+
+                if(((totalGameTime % 30) == 0) && (totalGameTime != 300))
+                    displayHint();
+
+                System.out.println("Countdown timer: ");
+                totalGameTime--;   
+            }
+        };
+
+        //Count down timer for Game
+        GameStart.scheduleAtFixedRate(task, 0 , 1000);
+    }
+
+    public void gameOver(){
+        User temp = new User(); //store player into temp User
+        for(int i = 0; i < players.size(); i++)
+        {
+            temp = players.get(i);
+            temp.currentGame = null;
+            temp.addGameScoreToTotalScore();
+        }
     }
 
     public void displayHint() {
-
+        //Find word in the current word list
+        //Call addselection 
     }
 
     public void validateAttempt(User attempter, Point start, Point end) {
@@ -41,6 +73,7 @@ public class Game {
         }
         else
         {
+            //Might need to add another remove selection for the newly selected point
             grid.removeSelection(start, attempter.color);
             attempter.selectedPoint = null;
         }
@@ -54,7 +87,7 @@ public class Game {
         if(user.selectedPoint != null)
         {
             //point comes from the user. Assumed that the user has already made a selection
-            System.out.println("Validating users " + user.name + "selected points" + "( " + user.selectedPoint.x + ", " + user.selectedPoint.y + ") " + "and " + "( " + selection.x + ", " + selection.y + ").");
+            System.out.println("Validating user: " + user.name + "selected points" + "( " + user.selectedPoint.x + ", " + user.selectedPoint.y + ") " + "and " + "( " + selection.x + ", " + selection.y + ").");
             validateAttempt(user, user.selectedPoint, selection);
             user.selectedPoint = null;
         }
