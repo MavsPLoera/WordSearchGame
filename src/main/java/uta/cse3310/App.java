@@ -50,84 +50,92 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 public class App extends WebSocketServer {
-  public App(int port) {
-    super(new InetSocketAddress(port));
-  }
+    public App(int port) {
+        super(new InetSocketAddress(port));
+    }
 
-  public App(InetSocketAddress address) {
-    super(address);
-  }
+    public App(InetSocketAddress address) {
+        super(address);
+    }
 
-  public App(int port, Draft_6455 draft) {
-    super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
-  }
+    public App(int port, Draft_6455 draft) {
+        super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
+    }
 
-  public ArrayList<User> onlineUsers;
-  public Leaderboard leaderboard;
-  public ArrayList<Game> activeGames;
-  public Lobby[] lobbies;
+    public ArrayList<User> onlineUsers = new ArrayList<>();
+    public ArrayList<User> allUsers = new ArrayList<>();
+    public ArrayList<Game> activeGames = new ArrayList<>();
+    public Lobby[] lobbies = new Lobby[3];
 
-  public User createUser() {
-    throw new UnsupportedOperationException();
-  }
+    public static String[] words;
 
-  public void removeUser(User user) {
+    public User createUser(String name, WebSocket socket) {
+        for (var onlineUser : onlineUsers) {
+            if (onlineUser.name.equals(name))
+                return null;
+        }
 
-  }
+        var user = new User();
+        user.name = name;
+        user.socket = socket;
+        socket.setAttachment(user);
+        return user;
+    }
 
-  public void addToLobby(Lobby lobby, User user) {
+    public void removeUser(User user) {
 
-  }
+    }
 
-  public void removeFromLobby(Lobby lobby, User user) {
+    public void addToLobby(Lobby lobby, User user) {
 
-  }
+    }
 
-  @Override
-  public void onOpen(WebSocket conn, ClientHandshake handshake) {
+    public void removeFromLobby(Lobby lobby, User user) {
 
-  }
+    }
 
-  @Override
-  public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+    @Override
+    public void onOpen(WebSocket conn, ClientHandshake handshake) {
 
-  }
+    }
 
-  @Override
-  public void onMessage(WebSocket conn, String message) {
+    @Override
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        onlineUsers.remove((User)conn.getAttachment());
+    }
 
-  }
+    @Override
+    public void onMessage(WebSocket conn, String message) {
 
-  @Override
-  public void onMessage(WebSocket conn, ByteBuffer message) {
+    }
 
-  }
+    @Override
+    public void onError(WebSocket conn, Exception ex) {
 
-  @Override
-  public void onError(WebSocket conn, Exception ex) {
+    }
 
-  }
+    @Override
+    public void onStart() {
 
-  @Override
-  public void onStart() {
+    }
 
-  }
+    public static void main(String[] args) {
+        // load word list
 
-  public static void main(String[] args) {
 
-    // Set up the http server
-    int port = 9080;
-    HttpServer H = new HttpServer(port, "./html");
-    H.start();
-    System.out.println("http Server started on port: " + port);
+        // Set up the http server
+        int port = 9080;
+        HttpServer H = new HttpServer(port, "./html");
+        H.start();
+        System.out.println("http Server started on port: " + port);
 
-    // create and start the websocket server
+        // create and start the websocket server
 
-    port = 9880;
-    App A = new App(port);
-    A.setReuseAddr(true);
-    A.start();
-    System.out.println("websocket Server started on port: " + port);
+        port = 9880;
+        App A = new App(port);
+        A.setReuseAddr(true);
+        A.start();
+        System.out.println("websocket Server started on port: " + port);
 
-  }
+    }
 }

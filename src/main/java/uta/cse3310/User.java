@@ -17,16 +17,11 @@ public class User {
     public void addToCurrentScore(int score){
         currentGameScore += score;
     }
-    
-    public void addTogameScore(int value) {
-        currentGameScore += value; 
-    }
-    public void SetColor(int color){
-        color = this.color;
-    }
-    public void addToTotalScore(){
+    public void addGameScoreToTotalScore() {
         totalScore += currentGameScore;
         currentGameScore = 0;
     }
-
+    public void setColor(int color){
+        color = this.color;
+    }
 }
