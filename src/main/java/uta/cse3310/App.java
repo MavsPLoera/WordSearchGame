@@ -172,7 +172,8 @@ public class App extends WebSocketServer {
         TimerTask task = new TimerTask() {
             @Override
             public void run(){
-                for(Iterator<Game> iter = activeGames.iterator(); iter.hasNext();)
+                Iterator<Game> iter = activeGames.iterator();
+                while(iter.hasNext())
                 {
                     Game game = iter.next();
                     game.tick();
