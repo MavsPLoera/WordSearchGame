@@ -6,6 +6,7 @@ public class Game {
     public ArrayList<User> players;
     public Grid grid;
     public int totalGameTime = 300; //Timer set for 5 minutes
+    public boolean gameOver = false;
 
     public Game(ArrayList<User> lobby)
     {
@@ -21,23 +22,14 @@ public class Game {
         grid = Grid.createGrid(20, 20);
     }
 
-    public void gameOver(){
+    public void gameOver() {
         for(User temp: players)
         {
             temp.addGameScoreToTotalScore();
             temp.currentGame = null;
         }
-        
-        //Have just in case enhanced for loop doesnt work properlly
-        /*
-        User temp = new User(); //store player into temp User
+        gameOver = true;
 
-        for(int i = 0; i < players.size(); i++)
-        {
-            temp = players.get(i);
-            temp.addGameScoreToTotalScore();
-            temp.currentGame = null;
-        }*/
     }
 
     public void displayHint() {

@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Iterator;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
@@ -170,10 +171,15 @@ public class App extends WebSocketServer {
         Timer GameStart = new Timer();
         TimerTask task = new TimerTask() {
             @Override
-            public void run(){    //Prevent gameover from running twice
-                for(Game games: activeGames)
+            public void run(){
+                for(Iterator<Game> iter = activeGames.iterator(); iter.hasNext();)
                 {
-                    games.tick();
+                    Game game = iter.next();
+                    game.tick();
+
+                    if(game.gameOver)
+                        iter.remove();
+
                 }
             }
         };

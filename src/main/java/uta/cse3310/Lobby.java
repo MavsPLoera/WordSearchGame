@@ -11,8 +11,7 @@ public class Lobby {
         
         if(usersInLobby.size() > playerSize){
             Game newinstance = new Game(usersInLobby);
-            activeGames.add(newinstance);
-            //Need to add to active games in App
+            //Need to add to active games in App. might just need to return the bool then create game in App
 
             usersInLobby.clear();
             return true;
