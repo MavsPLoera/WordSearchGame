@@ -28,7 +28,7 @@ public class Grid {
     }
 
     public String checkStartEnd(Point start, Point end) {
-        throw new UnsupportedOperationException();
+        return " ";
     }
 
     public void wordFound(Point start, Point end, int color) {

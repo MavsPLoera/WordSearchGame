@@ -54,25 +54,25 @@ public class Game {
         {
             //Might need to add another remove selection for the newly selected point
             grid.removeSelection(start, attempter.color);
-            attempter.selectedPoint = null;
+            //attempter.selectedPoint = null;
         }
     }
 
     public void input(User user, Point selection) {
         //Change point in grid to selected/unselected
         //Need to check if the user.selectedPoint == the same Point
-        System.out.println("Received input from Player " + user.name + " at point " + "( " + selection.x + ", " + selection.y + ")." );
+        System.out.println("Received input from Player " + user.name + " at point " + "(" + selection.x + ", " + selection.y + ")." );
 
         if(user.selectedPoint != null)
         {
             //point comes from the user. Assumed that the user has already made a selection
-            System.out.println("Validating user: " + user.name + "selected points" + "( " + user.selectedPoint.x + ", " + user.selectedPoint.y + ") " + "and " + "( " + selection.x + ", " + selection.y + ").");
+            System.out.println("Validating user: " + user.name + " selected points" + "(" + user.selectedPoint.x + ", " + user.selectedPoint.y + ") " + "and " + "(" + selection.x + ", " + selection.y + ").");
             validateAttempt(user, user.selectedPoint, selection);
             user.selectedPoint = null;
         }
         else
         {
-            System.out.println("Highlighting point" + "( " + selection.x + ", " + selection.y + ") with the color " + user.color + "." );
+            System.out.println("Highlighting point" + "(" + selection.x + ", " + selection.y + ") with the color " + user.color + "." );
             grid.addSelection(selection, user.color);
             user.selectedPoint = selection;
         }
