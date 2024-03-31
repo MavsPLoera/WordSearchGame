@@ -16,7 +16,7 @@ public class Game {
         for(int i = 0; i < players.size(); i++)
         {
             var player = players.get(i);
-            player.color = i + 1;
+            player.setColor(i + 1);
         }
 
         grid = Grid.createGrid(20, 20);
@@ -29,7 +29,6 @@ public class Game {
             temp.currentGame = null;
         }
         gameOver = true;
-
     }
 
     public void displayHint() {
@@ -59,7 +58,6 @@ public class Game {
 
     public void input(User user, Point selection) {
         //Change point in grid to selected/unselected
-        //Need to check if the user.selectedPoint == the same Point
         System.out.println("Received input from Player " + user.name + " at point " + "(" + selection.x + ", " + selection.y + ")." );
 
         if(user.selectedPoint != null)
