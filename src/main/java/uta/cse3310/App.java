@@ -155,14 +155,26 @@ public class App extends WebSocketServer {
 
 
         // Set up the http server
-        int port = 9080;
+        String portString = System.getenv("HTTP_PORT");
+        int port;
+        if (portString == null) {
+            port = 9080;
+        }
+        else {
+            port = Integer.parseInt(portString);
+        }
         HttpServer H = new HttpServer(port, "./html");
         H.start();
         System.out.println("http Server started on port: " + port);
 
         // create and start the websocket server
 
-        port = 9880;
+        portString = System.getenv("WEBSOCKET_PORT");
+        if (portString == null) {
+            port = 9880;
+        } else {
+            port = Integer.parseInt(portString);
+        }
         App A = new App(port);
         A.setReuseAddr(true);
         A.start();
