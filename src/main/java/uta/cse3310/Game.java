@@ -54,7 +54,6 @@ public class Game {
         {
             //Might need to add another remove selection for the newly selected point
             grid.removeSelection(start, attempter.color);
-            //attempter.selectedPoint = null;
         }
     }
 
