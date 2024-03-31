@@ -26,7 +26,7 @@ for (let i = 0; i < 20; i++) {
 }
 changeGrid();
 
-var serverUrl = "ws://0.tcp.ngrok.io:19539";
+var serverUrl = "ws://sp24.cse3310.org:9129";
 var connection = new WebSocket(serverUrl);
 
 connection.onopen = function (evt) {
