@@ -1,3 +1,13 @@
+function showgridPage() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('mainWindow').style.display = 'block';
+}
+
+function showLoginPage() {
+    document.getElementById('mainWindow').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+}
+
 function changeGrid(){
     let gridDiv = document.getElementById("gameGrid");
     console.log("gridDiv: ", gridDiv);
@@ -12,6 +22,7 @@ function changeGrid(){
         }
     }
 }
+
 let grid = [];
 for (let i = 0; i < 20; i++) {
     grid[i] = [];
@@ -31,6 +42,7 @@ var connection = new WebSocket(serverUrl);
 
 connection.onopen = function (evt) {
     console.log("open");
+    showLoginPage();
 }
 connection.onclose = function (evt) {
     console.log("close");
