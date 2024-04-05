@@ -41,6 +41,7 @@ package uta.cse3310;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Iterator;
@@ -54,8 +55,7 @@ import org.java_websocket.server.WebSocketServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 
-import uta.cse3310.Events.JoinLobbyRequest;
-import uta.cse3310.Events.UserLoginRequest;
+import uta.cse3310.Events.*;
 
 public class App extends WebSocketServer {
     public App(int port) {
@@ -73,7 +73,7 @@ public class App extends WebSocketServer {
     public ArrayList<User> onlineUsers = new ArrayList<>();
     public ArrayList<User> allUsers = new ArrayList<>();
     public static ArrayList<Game> activeGames = new ArrayList<>();
-    public Lobby[] lobbies = new Lobby[3];
+    public Lobby[] lobbies = new Lobby[] { new Lobby(2), new Lobby(3), new Lobby(4) };
 
     private Gson gson = new Gson();
 
@@ -93,6 +93,47 @@ public class App extends WebSocketServer {
         user.name = name;
         allUsers.add(user);
         return user;
+    }
+
+    public void broadcastUserList() {
+        var event = new EventHolder<>("PlayerListResponse", new PlayerListResponse());
+        String[] users = new String[onlineUsers.size()];
+        for (int i = 0; i < users.length; i++) {
+            users[i] = onlineUsers.get(i).name;
+        }
+        event.eventData.onlineUsers = users;
+        broadcast(gson.toJson(event));
+    }
+
+    public void broadcastLobbies() {
+        var event = new EventHolder<>("LobbyUpdateResponse", new LobbyUpdateResponse());
+        String[][] lobbies = new String[3][];
+        for (int i = 0; i < 3; i++) {
+            lobbies[i] = new String[this.lobbies[i].usersInLobby.size()];
+            for (int j = 0; j < lobbies[i].length; j++) {
+                lobbies[i][j] = this.lobbies[i].usersInLobby.get(j).name;
+            }
+        }
+        event.eventData.lobbies = lobbies;
+        broadcast(gson.toJson(event));
+    }
+
+    public void broadcastLeaderboard() {
+        var event = new EventHolder<>("LeaderBoardResponse", new LeaderBoardResponse());
+        var size = allUsers.size() > 20 ? 20 : allUsers.size();
+        event.eventData.usernames = new String[size];
+        event.eventData.scores = new int[size];
+        allUsers.sort(new Comparator<User>() {
+            @Override
+            public int compare(User left, User right) {
+                return -Integer.compare(left.totalScore, right.totalScore);
+            }
+        });
+        for (int i = 0; i < size; i++) {
+            event.eventData.usernames[i] = allUsers.get(i).name;
+            event.eventData.scores[i] = allUsers.get(i).totalScore;
+        }
+        broadcast(gson.toJson(event));
     }
 
     public void addToLobby(Lobby lobby, User user) {
@@ -117,23 +158,36 @@ public class App extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         User user = conn.getAttachment();
+        System.out.println(message);
         var parser = JsonParser.parseString(message);
         var object = parser.getAsJsonObject();
         switch (object.get("type").getAsString())
         {
             case "UserLoginRequest":
                 var loginEvent = gson.fromJson(object.get("eventData"), UserLoginRequest.class);
-                user = createUser(loginEvent.name);
+                user = createUser(loginEvent.username);
                 if (user == null) {
-                    conn.send("nuh uh");
+                    conn.send("{ \"type\": \"LoginResponse\", \"eventData\": { \"loggedIn\": false } }");
                 } else {
                     user.socket = conn;
                     conn.setAttachment(user);
                     onlineUsers.add(user);
+                    conn.send("{ \"type\": \"LoginResponse\", \"eventData\": { \"loggedIn\": true } }");
+                    broadcastUserList();
+                    broadcastLeaderboard();
                 }
                 break;
             case "JoinLobbyRequest":
                 var lobbyJoinEvent = gson.fromJson(object.get("eventData"), JoinLobbyRequest.class);
+                for (var l : lobbies) {
+                    if (l.usersInLobby.contains(user)) {
+                        l.removeUser(user);
+                        break;
+                    }
+                }
+                var lobby = lobbies[lobbyJoinEvent.lobby];
+                lobby.addUser(user);
+                broadcastLobbies();
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -153,16 +207,9 @@ public class App extends WebSocketServer {
     public static void main(String[] args) {
         // load word list
 
-
         // Set up the http server
         String portString = System.getenv("HTTP_PORT");
-        int port;
-        if (portString == null) {
-            port = 9080;
-        }
-        else {
-            port = Integer.parseInt(portString);
-        }
+        int port = portString != null ? Integer.parseInt(portString) : 9080;
         HttpServer H = new HttpServer(port, "./html");
         H.start();
         System.out.println("http Server started on port: " + port);
@@ -170,11 +217,7 @@ public class App extends WebSocketServer {
         // create and start the websocket server
 
         portString = System.getenv("WEBSOCKET_PORT");
-        if (portString == null) {
-            port = 9880;
-        } else {
-            port = Integer.parseInt(portString);
-        }
+        port = portString != null ? Integer.parseInt(portString) : 9880;
         App A = new App(port);
         A.setReuseAddr(true);
         A.start();

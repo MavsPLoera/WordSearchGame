@@ -1,3 +1,46 @@
+var serverUrl = "ws://4.tcp.ngrok.io:12881";
+var connection = new WebSocket(serverUrl);
+showLoginPage();
+connection.onopen = function (evt) {
+    console.log("open");
+}
+connection.onclose = function (evt) {
+    console.log("close");
+}
+
+connection.onmessage = function (evt) {
+    var msg =  evt.data;
+    console.log("Message received: " + msg);
+    const obj = JSON.parse(msg);
+    switch (obj.type) {
+        case "LoginResponse":
+            if (obj.eventData.loggedIn) {
+                showgridPage();
+                showLobbyPage();
+            } else{
+                let errorMessage = document.getElementById("loginError");
+                errorMessage.innerHTML =
+                `<p>Please enter a different username, the one you entered is already taken</p>`;
+            }
+            break;
+        case "PlayerListResponse":
+            updatePlayerList(obj.eventData.onlineUsers);
+            break;
+        case "LobbyUpdateResponse":
+            updateLobbies(obj.eventData.lobbies);
+            break;
+        case "LeaderBoardResponse":
+            updateLeaderboard(obj.eventData);
+            break;
+        case "StartGame":
+            showGamePage();
+            break;
+        default:
+            console.log("unknown message type");
+            break;
+    }
+}
+
 function showgridPage() {
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('mainWindow').style.display = 'block';
@@ -5,12 +48,19 @@ function showgridPage() {
 
 function showLoginPage() {
     document.getElementById('mainWindow').style.display = 'none';
-    document.getElementById('loginForm').style.display = 'block';
+}
+function showLobbyPage() {
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('lobby').style.display = 'block';
+}
+function showGamePage() {
+    document.getElementById('lobby').style.display = 'none';
+    document.getElementById('game').style.display = 'block';
 }
 
+
 function changeGrid(){
-    let gridDiv = document.getElementById("gameGrid");
-    console.log("gridDiv: ", gridDiv);
+    console.log("gridDiv: ", gridDiv)
 
     for (let i = 0; i < 20; i++) {
         const row = document.createElement("div");
@@ -22,6 +72,7 @@ function changeGrid(){
         }
     }
 }
+// showLoginPage();
 
 let grid = [];
 for (let i = 0; i < 20; i++) {
@@ -35,25 +86,9 @@ for (let i = 0; i < 20; i++) {
         grid[i].push(gridElement);
     }
 }
-changeGrid();
+// changeGrid();
 
-var serverUrl = "ws://sp24.cse3310.org:9129";
-var connection = new WebSocket(serverUrl);
 
-connection.onopen = function (evt) {
-    console.log("open");
-    showLoginPage();
-}
-connection.onclose = function (evt) {
-    console.log("close");
-}
-
-connection.onmessage = function (evt) {
-    var msg =  evt.data;
-    console.log("Message received: " + msg);
-    const obj = JSON.parse(msg);
-    
-}
 
 
 // function sendMessage() {

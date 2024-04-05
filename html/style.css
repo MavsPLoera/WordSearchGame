@@ -1,3 +1,7 @@
+.lobby{
+    border: 2px solid black;
+}
+
 .box1 {
     background-color: lightblue;
     height: 800px; 
@@ -37,19 +41,94 @@
     
 
 }
+.split{
+    background: linear-gradient(to right, rgb(10, 164, 33) 50%, rgb(126, 8, 26) 50%);
+    color: antiquewhite;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
+}
+.split-four{
+    background-image: conic-gradient(
+        #e63946 0deg,
+        #e63946 90deg, /* First slice */
+        rgb(10, 28, 118) 90deg,
+        rgb(10, 28, 118) 180deg,
+        rgb(63, 68, 5) 180deg,
+        rgb(63, 68, 5)270deg, /* Second slice */
+        #b0da09 270deg,
+        #b0da09 360deg /* Third slice */
+    );
+    background-color: rgb(43, 0, 255);
+    color: antiquewhite;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
+    
+
+}
+.split1 {
+    background: linear-gradient(to right, rgb(10, 164, 33) 50%, rgb(126, 8, 26) 50%);
+    color: antiquewhite;
+    border: 4px solid; /* Border width */
+    border-image: linear-gradient(
+      to right, 
+      red 50%, /* First half color */
+      blue 50% /* Second half color */
+    ) 1;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
+}
+
+
+
+
+
+
+
 .box1 .button,
-.box2 .button {
+.box2 .button,
+.box1 .split,
+.box2 .split,
+.box1 .split-four,
+.box2 .split-four{
     margin-top: 10px;
 }
+
 
 #gameGrid{
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 /* .grid-row{
     display: flex;
     align-items: center;
     justify-content: center;
     margin: "2px";
+} */
+
+/*.split{
+    background: linear-gradient(to right, lightblue 50%, rgb(126, 8, 26) 50%);
+    color: antiquewhite;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
 } */
