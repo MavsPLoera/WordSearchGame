@@ -36,7 +36,11 @@ public class Game {
         //Call addselection
         //Change 0 to a random number generator between 0 and the size of wordList
         //Not finished but example on how to call
-        grid.addSelection( grid.wordIndices[0].start, 5); //5 will be the hint color
+        //Needs to take into account words that have been found or not.
+
+        //Chooses random number between 0 to grid.wordList.length
+        int random = (int)(Math.random() + (grid.wordList.length));
+        grid.addSelection( grid.wordIndices[random].start, 5); //5 will be the hint color
     }
 
     public void validateAttempt(User attempter, Point start, Point end) {
@@ -49,11 +53,9 @@ public class Game {
             //Removes word from the wordlist and changes the word to "is found"
             grid.wordFound(start, end, attempter.color);
         }
-        else
-        {
-            //Might need to add another remove selection for the newly selected point
-            grid.removeSelection(start, attempter.color);
-        }
+
+        //Might not need the removeSelection in the else can just have it after the if and let wordFound not remove the selection
+        grid.removeSelection(start, attempter.color);
     }
 
     public void input(User user, Point selection) {
@@ -77,7 +79,7 @@ public class Game {
 
     //Will be used for one timer that is implemented in App. Might have issue with the game time being negative.
     public void tick() {
-        if(totalGameTime == 0) //add something that checks || wordList == 0
+        if(totalGameTime == 0 || grid.checkWordList()) //add something that checks || wordList == 0
             gameOver();
 
         if(((totalGameTime % 30) == 0) && (totalGameTime != 300))

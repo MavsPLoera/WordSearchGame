@@ -42,4 +42,12 @@ public class Grid {
     public void removeSelection(Point point, int color) {
 
     }
+
+    public boolean checkWordList()
+    {
+        //loop through wordList or something like that
+        
+        return false;
+    }
+    
 }

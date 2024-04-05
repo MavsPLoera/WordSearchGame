@@ -44,6 +44,8 @@ public class GameUnit2Test extends TestCase
         point.y = 2;
         point2.x = 2;
         point2.y = 3;
+
+        //Need to check highlighting of each points on the grid once slected.
         testGame.input( testPlayers.get(0), point);
         testGame.input( testPlayers.get(0), point2);
 
