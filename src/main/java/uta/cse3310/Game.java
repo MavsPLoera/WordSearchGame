@@ -22,7 +22,7 @@ public class Game {
         grid = Grid.createGrid(20, 20);
     }
 
-    public void gameOver() {
+    private void gameOver() {
         for(User temp: players)
         {
             temp.addGameScoreToTotalScore();
@@ -55,6 +55,7 @@ public class Game {
         }
 
         //Might not need the removeSelection in the else can just have it after the if and let wordFound not remove the selection
+        //Dont know if we actually need this here since it would remove highlight of the start.
         grid.removeSelection(start, attempter.color);
     }
 

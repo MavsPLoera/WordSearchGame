@@ -13,8 +13,7 @@ public class Grid {
     public int minimumRandomChar;
     public int maximumRandomChar;
 
-    public enum DIRECTION
-    {
+    private enum DIRECTION {
         VERTICALUP, DIAGONALUPRIGHT, HORIZONTALRIGHT, DIAGONALDOWNRIGHT, VERTICALDOWN, DIAGONALDOWNLEFT, HORIZONTALLEFT, DIGAONALUPLEFT
     }
 
@@ -43,104 +42,87 @@ public class Grid {
     }
 
     public void wordFound(Point start, Point end, int color) {
-        //For loop to get all the letters of the word?
-        switch(checkDirection(start, end))
-        {
+        Point temp = new Point(); //Temp point if needed.
+
+        switch(checkDirection(start, end)) {
             case VERTICALUP:
                 //Swap start and end then iterate over y-cord upwards and highlight + setFound for each grid letter
-                Point temp = new Point();
                 temp = end;
                 end = start;
                 end = temp;
 
-                for(int y_cord = start.y; y_cord <= end.y; y_cord++)
-                {
+                for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
                 break;
             case DIAGONALUPRIGHT:
                 //Iterate over x + y-cord upwards and highlight + setFound for each grid letter
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
-                    for(int y_cord = start.y; y_cord <= end.y; y_cord++)
-                    {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
+                    for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
                 break;
             case HORIZONTALRIGHT:
                 //Iterate over x-cord upwards and highlight + setFound for each grid letter
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
                     //start.y should be the same as end.y
                     grid[x_cord][start.y].foundBy.add(color);
                 }
                 break;
             case DIAGONALDOWNRIGHT:
                 //Iterate over positive x-cord and negative y-cord
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
-                    for(int y_cord = start.y; y_cord >= end.y; y_cord--)
-                    {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
+                    for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
                 break;
             case VERTICALDOWN:
                 //iterate over y-cord upwards and highlight + setFound for each grid letter
-                for(int y_cord = start.y; y_cord <= end.y; y_cord++)
-                {
+                for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
                 break;
             case DIAGONALDOWNLEFT:
                 //swap start and end, Iterate over x + y-cord upwards and highlight + setFound for each grid letter
-                Point temp = new Point();
                 temp = end;
                 end = start;
                 end = temp;
 
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
                     //start.y should be the same as end.y
                     grid[x_cord][start.y].foundBy.add(color);
                 }
                 break;
             case HORIZONTALLEFT:
                 //Swap start and end, Iterate over x-cord upwards and highlight + setFound for each grid letter
-                Point temp = new Point();
                 temp = end;
                 end = start;
                 end = temp;
 
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
-                    for(int y_cord = start.y; y_cord <= end.y; y_cord++)
-                    {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
+                    for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
                 break;
             case DIGAONALUPLEFT:
                 //swap start and end, Iterate over positive x-cord and negative y-cord
-                Point temp = new Point();
                 temp = end;
                 end = start;
                 end = temp;
                 
-                for(int x_cord = start.x; x_cord <= end.x; x_cord++)
-                {
-                    for(int y_cord = start.y; y_cord >= end.y; y_cord--)
-                    {
+                for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
+                    for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
                 break;
             default:
                 System.out.println("ERROR IN CHECK DIRECTION");
-                break;
         }
     }
 
@@ -150,36 +132,28 @@ public class Grid {
         int y_points = end.y - start.y;
 
         //Check slope
-        if(x_points == 0 && y_points >= 1)
-        {
+        if(x_points == 0 && y_points >= 1) {
             return DIRECTION.VERTICALUP;
         }
-        else if(x_points >= 1 && y_points >= 1)
-        {
+        else if(x_points >= 1 && y_points >= 1) {
             return DIRECTION.DIAGONALUPRIGHT;
         }
-        else if(x_points >= 1 && y_points == 0)
-        {
+        else if(x_points >= 1 && y_points == 0) {
             return DIRECTION.HORIZONTALRIGHT;
         }
-        else if(x_points >= 1 && y_points <= -1)
-        {
+        else if(x_points >= 1 && y_points <= -1) {
             return DIRECTION.DIAGONALDOWNRIGHT;
         }
-        else if(x_points == 0 && y_points <= -1)
-        {
+        else if(x_points == 0 && y_points <= -1) {
             return DIRECTION.VERTICALDOWN;
         }
-        else if(x_points <= -1 && y_points <= -1)
-        {
+        else if(x_points <= -1 && y_points <= -1) {
             return DIRECTION.DIAGONALDOWNLEFT;
         }
-        else if(x_points <= -1 && y_points == 0)
-        {
+        else if(x_points <= -1 && y_points == 0) {
             return DIRECTION.HORIZONTALLEFT;
         }
-        else
-        {
+        else {
             return DIRECTION.DIGAONALUPLEFT;
         }
     }
