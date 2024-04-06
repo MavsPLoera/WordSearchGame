@@ -35,7 +35,7 @@ public class Grid {
         for(int i = 0; i < wordList.length; i++) {
             //Check for forward input and backward input of the word. Becareful the wordIndices being checked match up with the word potentially being sent.
             //Need to check if the word has already been found.
-            if(((start == wordIndices[i].start) && (end == wordIndices[i].end)) || ((end == wordIndices[i].start) && (start == wordIndices[i].end)))
+            if((((start.x == wordIndices[i].start.x) && (start.y == wordIndices[i].start.y)) && ((end.x == wordIndices[i].end.x) && (end.y == wordIndices[i].end.y))) || (((end.x == wordIndices[i].start.x) && (end.y == wordIndices[i].start.y)) && ((start.x == wordIndices[i].end.x) && (start.y == wordIndices[i].end.y))))
                 return wordList[i];
         }
         return null;
@@ -49,13 +49,16 @@ public class Grid {
                 //Swap start and end then iterate over y-cord upwards and highlight + setFound for each grid letter
                 temp = end;
                 end = start;
-                end = temp;
+                start = temp;
 
                 for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
+                
                 //Might need to swap back start end
+                start = end;
+                end = temp;
                 break;
             case DIAGONALUPRIGHT:
                 //Iterate over x + y-cord upwards and highlight + setFound for each grid letter
@@ -91,33 +94,39 @@ public class Grid {
                 //swap start and end, Iterate over x + y-cord upwards and highlight + setFound for each grid letter
                 temp = end;
                 end = start;
-                end = temp;
+                start = temp;
 
                 for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
                     for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
+
                 //Might need to swap back start end
+                start = end;
+                end = temp;
                 break;
             case HORIZONTALLEFT:
                 //Swap start and end, Iterate over positive x-cord and highlight
                 temp = end;
                 end = start;
-                end = temp;
+                start = temp;
 
                 for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
                     for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
+                
                 //Might need to swap back start end
+                start = end;
+                end = temp;
                 break;
             case DIGAONALUPLEFT:
                 //swap start and end, Iterate over positive x-cord and negative y-cord
                 temp = end;
                 end = start;
-                end = temp;
+                start = temp;
                 
                 for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
                     for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
@@ -125,6 +134,9 @@ public class Grid {
                     }
                 }
                 //Might need to start and end
+                start = end;
+                end = temp;
+
                 break;
             default:
                 System.out.println("ERROR IN CHECK DIRECTION");
@@ -181,11 +193,11 @@ public class Grid {
 
         //Iterate through all start points of the valid words and check if are found by atleast 1 player. Might be some weird edge cases but otherwise should be fine.
         for(int i = 0; i < wordIndices.length; i++) {
-            Point samplePoint = new Point();
-            samplePoint.x = wordIndices[i].start.x;
-            samplePoint.y = wordIndices[i].start.y;
+            //Point samplePoint = new Point();
+            //samplePoint.x = wordIndices[i].start.x;
+            //samplePoint.y = wordIndices[i].start.y;
             
-            if(grid[samplePoint.x][samplePoint.y].foundBy.size() == 0)
+            if(grid[wordIndices[i].start.x][wordIndices[i].start.y].foundBy.size() == 0)
                 wordsFound++;
         }
         
