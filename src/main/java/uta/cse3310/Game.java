@@ -22,7 +22,7 @@ public class Game {
         grid = Grid.createGrid(20, 20);
     }
 
-    private void gameOver() {
+    public void gameOver() {
         for(User temp: players)
         {
             temp.addGameScoreToTotalScore();
