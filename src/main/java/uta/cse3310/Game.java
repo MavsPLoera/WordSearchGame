@@ -23,6 +23,7 @@ public class Game {
     }
 
     public void gameOver() {
+        //Add scores from game to each Users totalScore. Signal gameOver for App to remove the game.
         for(User temp: players)
         {
             temp.addGameScoreToTotalScore();
@@ -54,8 +55,7 @@ public class Game {
             grid.wordFound(start, end, attempter.color);
         }
 
-        //Might not need the removeSelection in the else can just have it after the if and let wordFound not remove the selection
-        //Dont know if we actually need this here since it would remove highlight of the start.
+        //Remove selection from word grid.
         grid.removeSelection(start, attempter.color);
     }
 

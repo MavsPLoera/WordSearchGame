@@ -51,10 +51,11 @@ public class Grid {
                 end = start;
                 end = temp;
 
-                for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
+                for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
+                //Might need to swap back start end
                 break;
             case DIAGONALUPRIGHT:
                 //Iterate over x + y-cord upwards and highlight + setFound for each grid letter
@@ -81,7 +82,7 @@ public class Grid {
                 break;
             case VERTICALDOWN:
                 //iterate over y-cord upwards and highlight + setFound for each grid letter
-                for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
+                for(int y_cord = start.y; y_cord >= end.y; y_cord--) {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
@@ -93,12 +94,14 @@ public class Grid {
                 end = temp;
 
                 for(int x_cord = start.x; x_cord <= end.x; x_cord++) {
-                    //start.y should be the same as end.y
-                    grid[x_cord][start.y].foundBy.add(color);
+                    for(int y_cord = start.y; y_cord <= end.y; y_cord++) {
+                        grid[x_cord][y_cord].foundBy.add(color);
+                    }
                 }
+                //Might need to swap back start end
                 break;
             case HORIZONTALLEFT:
-                //Swap start and end, Iterate over x-cord upwards and highlight + setFound for each grid letter
+                //Swap start and end, Iterate over positive x-cord and highlight
                 temp = end;
                 end = start;
                 end = temp;
@@ -108,6 +111,7 @@ public class Grid {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
+                //Might need to swap back start end
                 break;
             case DIGAONALUPLEFT:
                 //swap start and end, Iterate over positive x-cord and negative y-cord
@@ -120,6 +124,7 @@ public class Grid {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
+                //Might need to start and end
                 break;
             default:
                 System.out.println("ERROR IN CHECK DIRECTION");
@@ -163,7 +168,7 @@ public class Grid {
     }
 
     public void removeSelection(Point point, int color) {
-        //Might be a better way to do this but for now I guess this works
+        //Get size of the selectedBy arrayList. If the color (number) is in the list remove.
         for(int i = 0; i < grid[point.x][point.y].selectedBy.size(); i++) {
             if(grid[point.x][point.y].selectedBy.get(i) == color)
                 grid[point.x][point.y].selectedBy.remove(i);
