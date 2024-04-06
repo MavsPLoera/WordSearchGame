@@ -7,7 +7,7 @@ public class User {
     // 0 outside of a game
     public int color;
     public int currentGameScore;
-    public int totalScore = new java.util.Random().nextInt();
+    public int totalScore;
     // null when user is disconnected
     public WebSocket socket;
     // null when not playing a game
