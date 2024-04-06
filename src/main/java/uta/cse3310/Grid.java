@@ -55,7 +55,7 @@ public class Grid {
                     //start.x and end.x should be the same
                     grid[start.x][y_cord].foundBy.add(color);
                 }
-                
+
                 //Might need to swap back start end
                 start = end;
                 end = temp;
@@ -133,10 +133,10 @@ public class Grid {
                         grid[x_cord][y_cord].foundBy.add(color);
                     }
                 }
+                
                 //Might need to start and end
                 start = end;
                 end = temp;
-
                 break;
             default:
                 System.out.println("ERROR IN CHECK DIRECTION");
