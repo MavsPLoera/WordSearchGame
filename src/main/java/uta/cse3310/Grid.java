@@ -190,16 +190,12 @@ public class Grid {
         }
     }
 
-    public boolean checkWordList()
-    {
+    //Used for gameover seqeucne if result is true.
+    public boolean checkWordList() {
         int wordsFound = 0;
 
         //Iterate through all start points of the valid words and check if are found by atleast 1 player. Might be some weird edge cases but otherwise should be fine.
-        for(int i = 0; i < wordIndices.length; i++) {
-            //Point samplePoint = new Point();
-            //samplePoint.x = wordIndices[i].start.x;
-            //samplePoint.y = wordIndices[i].start.y;
-            
+        for(int i = 0; i < wordIndices.length; i++) {      
             if(grid[wordIndices[i].start.x][wordIndices[i].start.y].foundBy.size() == 0)
                 wordsFound++;
         }
@@ -208,6 +204,13 @@ public class Grid {
         if(wordsFound == wordList.length)
             return true;
             
+        return false;
+    }
+
+    public boolean checkWordFound(int numChoice) { 
+        if(grid[wordIndices[numChoice].start.x][wordIndices[numChoice].start.y].foundBy.size() == 0)
+            return true;
+
         return false;
     }
     

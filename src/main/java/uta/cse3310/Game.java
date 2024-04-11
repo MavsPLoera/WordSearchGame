@@ -33,14 +33,13 @@ public class Game {
     }
 
     public void displayHint() {
-        //Find word in the current word list
-        //Call addselection
-        //Change 0 to a random number generator between 0 and the size of wordList
-        //Not finished but example on how to call
-        //Needs to take into account words that have been found or not.
-
         //Chooses random number between 0 to grid.wordList.length
         int random = (int)(Math.random() + (grid.wordList.length));
+
+        //Will only highlight the start of the word as of now.
+        while(grid.checkWordFound(random) != true) {
+            random = (int)(Math.random() + (grid.wordList.length));
+        }
         grid.addSelection( grid.wordIndices[random].start, 5); //5 will be the hint color
     }
 
