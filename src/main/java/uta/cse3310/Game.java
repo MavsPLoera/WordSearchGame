@@ -80,7 +80,7 @@ public class Game {
 
     //Will be used for one timer that is implemented in App. Might have issue with the game time being negative or what to do with a game when it is finished.
     public void tick() {
-        if(totalGameTime == 0 || grid.checkWordList()) //add something that checks || wordList == 0
+        if(totalGameTime == 0 || grid.checkWordList())
             gameOver();
 
         if(((totalGameTime % 30) == 0) && (totalGameTime != 300))

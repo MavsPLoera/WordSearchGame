@@ -2,6 +2,7 @@ package uta.cse3310;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class Grid {
     public String[] wordList;
@@ -33,9 +34,11 @@ public class Grid {
 
     public String checkStartEnd(Point start, Point end) {
         for(int i = 0; i < wordList.length; i++) {
-            //Check for forward input and backward input of the word. Becareful the wordIndices being checked match up with the word potentially being sent.
-            //Need to check if the word has already been found.
-            if((((start.x == wordIndices[i].start.x) && (start.y == wordIndices[i].start.y)) && ((end.x == wordIndices[i].end.x) && (end.y == wordIndices[i].end.y))) || (((end.x == wordIndices[i].start.x) && (end.y == wordIndices[i].start.y)) && ((start.x == wordIndices[i].end.x) && (start.y == wordIndices[i].end.y))))
+            //Check for forward input and backward input of the word. Will automatically fail if the word has already been found. (Becareful the wordIndices being checked match up with the word potentially being sent.)
+            if((grid[wordIndices[i].start.x][wordIndices[i].start.y].foundBy.size() == 0) && ((start.x == wordIndices[i].start.x) && (start.y == wordIndices[i].start.y)) && ((end.x == wordIndices[i].end.x) && (end.y == wordIndices[i].end.y)))
+                return wordList[i];
+
+            if((grid[wordIndices[i].start.x][wordIndices[i].start.y].foundBy.size() == 0) && ((end.x == wordIndices[i].start.x) && (end.y == wordIndices[i].start.y)) && ((start.x == wordIndices[i].end.x) && (start.y == wordIndices[i].end.y)))
                 return wordList[i];
         }
         return null;
