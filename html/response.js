@@ -1,3 +1,5 @@
+
+
 function updatePlayerList(playerList){
     playerListElement = document.getElementById("playerList");
     playerListElement.innerHTML = "";
@@ -27,6 +29,46 @@ function updateLeaderboard(leaderBoardInfo){
     }
 }
 
-function updateChat(){
 
+
+function updateGame(grid, wordList){
+    // Update word grid
+    let gridDiv = document.getElementById("gameGrid");
+    gridDiv.innerHTML = "";
+    for (let i = 0; i < 20; i++) {
+        const row = document.createElement("div");
+        row.classList.add("grid-row");
+        gridDiv.appendChild(row);
+        for (let j = 0; j < 20; j++) {
+            let button = document.createElement('button');
+            button.style.border = '2px solid #FFFFFF';
+            if(grid[i][j]["foundBy"].length){
+                button.style.border = '2px solid #000000';
+                addBackground(button, grid[i][j]["foundBy"]);
+            }
+            if(grid[i][j]["selectedBy"].length){
+                button.style.border = '2px solid #CC9900';
+            }
+            button.type = 'button';
+            button.textContent = grid[i][j]["letter"]; 
+            
+            button.addEventListener('click', function() {
+                selectGrid(i, j);
+            });
+            
+            button.classList.add('grid-button');
+            row.appendChild(button);
+  
+        }
+    }
+    // update word list
+    let wordListDiv = document.getElementById("wordList");
+    wordListDiv.innerHTML = "";
+    for (let i = 0; i < wordList.length; i++) {
+        wordListDiv.innerHTML += wordList[i].word + " ";
+    }
+}
+function updateChat(){
+    let wordListDiv = document.getElementById("chatBox");
+    // wordListDiv.innerHTML += "" add an element that holds the username and message
 }

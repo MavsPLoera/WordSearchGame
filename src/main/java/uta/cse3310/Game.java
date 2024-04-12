@@ -1,6 +1,9 @@
 package uta.cse3310;
 
 import java.util.ArrayList;
+
+import uta.cse3310.Events.EventHolder;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -11,7 +14,7 @@ public class Game {
     public boolean gameOver = false;
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
-    public static int wordCountLimit = 10; // max total word in the grid or 60% whichever is first 
+    public static int wordCountLimit = 30; // max total word in the grid or 60% whichever is first 
     public static double maxDensity = 0.6;  //  maximum density (60%)
 
     public Game(ArrayList<User> lobby)
@@ -26,11 +29,15 @@ public class Game {
         {
             var player = players.get(i);
             player.setColor(i + 1);
+            System.out.println("did the thing");
+            player.currentGame = this;
         }
 
         grid = Grid.createGrid(20, 20);
 
-        for (String word : App.wordsfromfile) {
+        while (true) {
+            var word = App.wordsfromfile.get(grid.random.nextInt(App.wordsfromfile.size()));
+
             if (placedWordsCount >= wordCountLimit || (double)filledCells / totalCells > maxDensity) {
                 break;  // Stop adding words if limit or max density is reached
             }
@@ -47,8 +54,6 @@ public class Game {
         grid.fillEmptySpaces();
         Duration timeToCreate = Duration.between(startingTime, Instant.now());
         System.out.println(timeToCreate.toString());
-        grid.wordList = grid.addwordList.toArray(new String[0]);
-        grid.wordIndices = grid.wordLocations.toArray(new WordLocation[0]);
         
         grid.printGrid();
     }
@@ -65,24 +70,27 @@ public class Game {
 
     public void displayHint() {
         //Chooses random number between 0 to grid.wordList.length
-        int random = (int)(Math.random() + (grid.wordList.length));
+        int random = (int)(Math.random() + (grid.wordIndices.size()));
 
         //Will only highlight the start of the word as of now.
         while(grid.checkWordFound(random) != true) {
-            random = (int)(Math.random() + (grid.wordList.length));
+            random = (int)(Math.random() + (grid.wordIndices.size()));
         }
-        grid.addSelection( grid.wordIndices[random].start, 5); //5 will be the hint color
+        grid.addSelection( grid.wordIndices.get(random).start, 5); //5 will be the hint color
     }
 
     public void validateAttempt(User attempter, Point start, Point end) {
-        String wordFound = grid.checkStartEnd(start , end);
+        WordLocation wordFound = grid.checkStartEnd(start , end);
 
         if(wordFound != null)
         {
-            attempter.addToCurrentScore(wordFound.length());
+            attempter.addToCurrentScore(wordFound.word.length());
 
-            //Removes word from the wordlist and changes the word to "is found"
-            grid.wordFound(start, end, attempter.color);
+            for (var item : wordFound.letters) {
+                item.foundBy.add(attempter.color);
+            }
+
+            grid.wordIndices.remove(wordFound);
         }
 
         //Remove selection from word grid.
@@ -106,15 +114,26 @@ public class Game {
             grid.addSelection(selection, user.color);
             user.selectedPoint = selection;
         }
+        sendUpdate();
+    }
+
+    public void sendUpdate() {
+        var event = App.gson.toJson(new EventHolder<>("GameResponse", this));
+        for (var user : players) {
+            user.socket.send(event);
+        }
     }
 
     //Will be used for one timer that is implemented in App. Might have issue with the game time being negative or what to do with a game when it is finished.
     public void tick() {
-        if(totalGameTime == 0 || grid.checkWordList())
+        if(totalGameTime <= 0 || grid.checkWordList()) { 
             gameOver();
-
-        if(((totalGameTime % 30) == 0) && (totalGameTime != 300))
+            sendUpdate();
+        }
+        else if(((totalGameTime % 30) == 0) && (totalGameTime != 300)) {
             displayHint();
+            sendUpdate();
+        }
 
         totalGameTime--; 
     }

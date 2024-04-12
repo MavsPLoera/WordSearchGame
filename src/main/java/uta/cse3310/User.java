@@ -9,10 +9,10 @@ public class User {
     public int currentGameScore;
     public int totalScore;
     // null when user is disconnected
-    public WebSocket socket;
+    public transient WebSocket socket;
     // null when not playing a game
-    public Game currentGame;
-    public Point selectedPoint;
+    public transient Game currentGame;
+    public transient Point selectedPoint;
 
     public void addToCurrentScore(int score){
         currentGameScore += score;

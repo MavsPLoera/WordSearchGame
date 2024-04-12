@@ -78,7 +78,7 @@ public class App extends WebSocketServer {
     public Lobby[] lobbies = new Lobby[] { new Lobby(2), new Lobby(3), new Lobby(4) };
     public static ArrayList<String> wordsfromfile = readWordsFromFile("word-list-filtered.txt");
 
-    private Gson gson = new Gson();
+    public static Gson gson = new Gson();
 
     public static String[] words;
 
@@ -123,7 +123,7 @@ public class App extends WebSocketServer {
 
     public void broadcastLeaderboard() {
         var event = new EventHolder<>("LeaderBoardResponse", new LeaderBoardResponse());
-        var size = allUsers.size() > 20 ? 20 : allUsers.size();
+        var size = Math.min(allUsers.size(), 20);
         event.eventData.usernames = new String[size];
         event.eventData.scores = new int[size];
         allUsers.sort(new Comparator<User>() {
@@ -139,12 +139,12 @@ public class App extends WebSocketServer {
         broadcast(gson.toJson(event));
     }
 
-    public void addToLobby(Lobby lobby, User user) {
-
-    }
-
-    public void removeFromLobby(Lobby lobby, User user) {
-
+    private void startGame(Game g) {
+        var startGameEvent = gson.toJson(new EventHolder<>("StartGameResponse", null));
+        for (var user : g.players) {
+            user.socket.send(startGameEvent);
+        }
+        g.sendUpdate();
     }
 
     @Override
@@ -160,6 +160,7 @@ public class App extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
+        try {
         User user = conn.getAttachment();
         System.out.println(message);
         var parser = JsonParser.parseString(message);
@@ -190,10 +191,27 @@ public class App extends WebSocketServer {
                 }
                 var lobby = lobbies[lobbyJoinEvent.lobby];
                 lobby.addUser(user);
+                var game = lobby.tryMakeGame();
+                if (game != null) {
+                    activeGames.add(game);
+                    startGame(game);
+                }
                 broadcastLobbies();
+                break;
+            case "SelectGridRequest":
+                var point = gson.fromJson(object.get("eventData"), Point.class);
+                user.currentGame.input(user, point);
+                break;
+            case "ChatRequest":
+                var chat = gson.fromJson(object.get("eventData"), ChatRequest.class);
+                broadcast(gson.toJson(new EventHolder<>("ChatResponse", new ChatResponse(user.name, chat.message))));
                 break;
             default:
                 throw new UnsupportedOperationException();
+        }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -243,12 +261,6 @@ public class App extends WebSocketServer {
         A.start();
         System.out.println("websocket Server started on port: " + port);
 
-
-        //testing two games with the grids
-        ArrayList<User> lobbyie = new ArrayList<User>();//testing the grid creation
-        Game game = new Game(lobbyie);
-        Game game2 = new Game(lobbyie);
-
         Timer GameStart = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -268,6 +280,5 @@ public class App extends WebSocketServer {
 
         //Count down timer for Game
         GameStart.scheduleAtFixedRate(task, 0 , 1000);
-
     }
 }

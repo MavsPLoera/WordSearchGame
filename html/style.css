@@ -1,18 +1,73 @@
+#login{
+    position: absolute; 
+    top: 30%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial;
+    font-size: 50px;
+    background-color: #f5f5f5; 
+    border: 1px solid #ccc;
+    padding: 20px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+#real_username{
+    position: absolute; 
+    top: 55%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial;
+    font-size: 30px;
+}
+#username{
+    position: absolute; 
+    top: 60%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    font-family: Arial;
+    font-size: 15px;
+    width: 250px;
+}
+#submit{
+    position: absolute; 
+    top: 65%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    font-family: Arial;
+    font-size: 15px;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+}
+
 .lobby{
     border: 2px solid black;
 }
-
+.box-container{
+    display: flex;
+}
+.box1{
+    border: 2px solid black;
+}
+.box2{
+    border: 2px solid black;
+}
 .box1 {
     background-color: lightblue;
     height: 800px; 
     width: 800px;
     margin-right: 20px;
+    display: "flex";
+    flex-direction: column; 
+    float : left;
 }
 
 .box2 {
     background-color: lightgreen;
     height: 800px;
-    width: 300px;
+    width: 200px;
+    float : right;
    }
 .display{
     display: block;
@@ -20,14 +75,14 @@
 .hide{
     display: none;
 }
-.button{
+ /*.button{
     background-image: conic-gradient(
         #e63946 0deg,
-        #e63946 120deg, /* First slice */
+        #e63946 120deg, 
         #f1faee 120deg,
-        #f1faee 240deg, /* Second slice */
+        #f1faee 240deg, 
         #a8dadc 240deg,
-        #a8dadc 360deg /* Third slice */
+        #a8dadc 360deg 
     );
     background-color: rgb(43, 0, 255);
     color: antiquewhite;
@@ -41,6 +96,7 @@
     
 
 }
+
 .split{
     background: linear-gradient(to right, rgb(10, 164, 33) 50%, rgb(126, 8, 26) 50%);
     color: antiquewhite;
@@ -55,13 +111,13 @@
 .split-four{
     background-image: conic-gradient(
         #e63946 0deg,
-        #e63946 90deg, /* First slice */
+        #e63946 90deg, 
         rgb(10, 28, 118) 90deg,
         rgb(10, 28, 118) 180deg,
         rgb(63, 68, 5) 180deg,
-        rgb(63, 68, 5)270deg, /* Second slice */
+        rgb(63, 68, 5)270deg, 
         #b0da09 270deg,
-        #b0da09 360deg /* Third slice */
+        #b0da09 360deg 
     );
     background-color: rgb(43, 0, 255);
     color: antiquewhite;
@@ -78,11 +134,11 @@
 .split1 {
     background: linear-gradient(to right, rgb(10, 164, 33) 50%, rgb(126, 8, 26) 50%);
     color: antiquewhite;
-    border: 4px solid; /* Border width */
+    border: 4px solid; 
     border-image: linear-gradient(
       to right, 
-      red 50%, /* First half color */
-      blue 50% /* Second half color */
+      red 50%, 
+      blue 50% 
     ) 1;
     padding: 10px;
     cursor: pointer;
@@ -105,22 +161,39 @@
 .box1 .split-four,
 .box2 .split-four{
     margin-top: 10px;
+} 
+*/
+#playerList{
+    height: "100px";
 }
-
-
 #gameGrid{
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
-/* .grid-row{
+.grid-row{
     display: flex;
+    flex-direction: row;
+}
+
+
+.grid-button{
+    background-color: "white";
+    color: "black";
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    line-height: 10px;
+    margin: 2px;
+    padding: 0;
+    text-align: center;
     align-items: center;
     justify-content: center;
-    margin: "2px";
-} */
-
+}
 /*.split{
     background: linear-gradient(to right, lightblue 50%, rgb(126, 8, 26) 50%);
     color: antiquewhite;

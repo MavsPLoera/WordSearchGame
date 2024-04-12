@@ -14,11 +14,21 @@ function addUser(event) {
 }
 
 function joinLobby(lobbyId){
-    console.log("lobbyId", lobbyId);
     connection.send(JSON.stringify({
         "type": "JoinLobbyRequest",
         "eventData": {
             "lobby": lobbyId
+        }
+    }));
+}
+
+function selectGrid(x, y){
+    console.log(x,y)
+    connection.send(JSON.stringify({
+        "type": "SelectGridRequest",
+        "eventData": {
+            "x": x,
+            "y": y,
         }
     }));
 }

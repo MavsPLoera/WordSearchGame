@@ -10,25 +10,20 @@ public class Lobby {
         playerSize = size;
     }
 
-    private boolean sufficientPlayers() {
+    public Game tryMakeGame() {
         //create new game and add players in player list to lobby
         
         if(usersInLobby.size() >= playerSize){
             Game newinstance = new Game(usersInLobby);
-            //Need to add to active games in App. might just need to return the bool then create game in App
 
             usersInLobby.clear();
-            return true;
+            return newinstance;
         }
-
-        //implementsome way to update frontend somehow here 
         
-        return false;
+        return null;
     }
     void addUser(User user) {
         usersInLobby.add(user);
-        sufficientPlayers();
-        // have a check to make sure we arent already in lobby
     }
     void removeUser(User user) {
         usersInLobby.remove(user);

@@ -1,5 +1,4 @@
-//var serverUrl = "ws://4.tcp.ngrok.io:12881";
-var serverUrl = "ws://localhost:9880";
+var serverUrl = "ws://sp24.cse3310.org:9129";
 
 var connection = new WebSocket(serverUrl);
 showLoginPage();
@@ -8,12 +7,14 @@ connection.onopen = function (evt) {
 }
 connection.onclose = function (evt) {
     console.log("close");
+    document.getElementById("errorBox").innerHTML += "lost connection to server\n";
 }
 
 connection.onmessage = function (evt) {
     var msg =  evt.data;
-    console.log("Message received: " + msg);
+    console.log("Message received:");
     const obj = JSON.parse(msg);
+    console.log(obj);
     switch (obj.type) {
         case "LoginResponse":
             if (obj.eventData.loggedIn) {
@@ -34,22 +35,33 @@ connection.onmessage = function (evt) {
         case "LeaderBoardResponse":
             updateLeaderboard(obj.eventData);
             break;
-        case "StartGame":
+        case "StartGameResponse":
+            console.log("Start game is running");
             showGamePage();
             break;
+        case "EndGameResponse":
+            showLobbyPage();
+            break;
+        case "GameResponse":
+            updateGame(obj.eventData.grid.grid, obj.eventData.grid.wordIndices);
+            break;
+        case "ChatResponse":
+            updateChat(obj.eventData.user, obj.eventData.message);
+            break;
         default:
-            console.log("unknown message type");
+            console.log(`unknown message type: ${obj.type}`);
             break;
     }
 }
 
 function showgridPage() {
     document.getElementById('loginForm').style.display = 'none';
-    document.getElementById('mainWindow').style.display = 'block';
+    document.getElementById('lobby').style.display = 'block';
 }
 
 function showLoginPage() {
-    document.getElementById('mainWindow').style.display = 'none';
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('lobby').style.display = 'none';
 }
 function showLobbyPage() {
     document.getElementById('game').style.display = 'none';
@@ -61,20 +73,6 @@ function showGamePage() {
 }
 
 
-function changeGrid(){
-    console.log("gridDiv: ", gridDiv)
-
-    for (let i = 0; i < 20; i++) {
-        const row = document.createElement("div");
-        row.classList.add("grid-row");
-        gridDiv.appendChild(row);
-        for (let j = 0; j < 20; j++) {
-            row.innerHTML +=
-            `<button type="button">N</button>`;
-        }
-    }
-}
-// showLoginPage();
 
 let grid = [];
 for (let i = 0; i < 20; i++) {
@@ -88,13 +86,8 @@ for (let i = 0; i < 20; i++) {
         grid[i].push(gridElement);
     }
 }
-// changeGrid();
 
 
 
 
-// function sendMessage() {
-//     connection.send(JSON.stringify());
-//     console.log(JSON.stringify())
-// }
 
