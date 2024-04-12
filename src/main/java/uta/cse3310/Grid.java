@@ -2,19 +2,16 @@ package uta.cse3310;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.time.Duration;
-import java.time.Instant;
 
 public class Grid {
     public String[] wordList;
     public WordLocation[] wordIndices;
     public GridItem[][] grid;
-    public Duration timeToCreate;
     public float[] randomness;
     public int minimumRandomChar;
     public int maximumRandomChar;
-    private ArrayList<String> addwordList;//convert to string array later 
-    private ArrayList<WordLocation> wordLocations;//convert to WordLocation array late
+    public ArrayList<String> addwordList;//convert to string array later 
+    public ArrayList<WordLocation> wordLocations;//convert to WordLocation array late
 
     private Random random = new Random();
     //long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
@@ -31,7 +28,6 @@ public class Grid {
     private Grid() {}
 
     public static Grid createGrid(int rowNumber, int columnNumber) {
-        var startingTime = Instant.now();
 
         var grid = new Grid();
         grid.grid = new GridItem[rowNumber][columnNumber];
@@ -43,8 +39,6 @@ public class Grid {
         }
 
 
-        grid.timeToCreate = Duration.between(startingTime, Instant.now());
-        System.out.println(grid.timeToCreate.toString());
         return grid;
     }
 
@@ -197,8 +191,8 @@ public class Grid {
             for (int j = 0; j < grid[i].length; j++) {
                 if (grid[i][j].letter == ' ') {  // Assuming ' ' represents an empty space
                     grid[i][j].letter = '_';  // Fill with _ for debugging
-                    // char randomChar = (char) (random.nextInt(26) + 'a');
-                    // grid[i][j].letter = randomChar;
+                    char randomChar = (char) (random.nextInt(26) + 'a');
+                    grid[i][j].letter = randomChar;
                 }
             }
         }
@@ -222,7 +216,7 @@ public class Grid {
     }
 
     public String checkStartEnd(Point start, Point end) {
-        for(int i = 0; i < wordList.length; i++) {
+        for(int i = 0; i < addwordList.size(); i++) {
             //Check for forward input and backward input of the word. Will automatically fail if the word has already been found. (Becareful the wordIndices being checked match up with the word potentially being sent.)
             if((grid[wordIndices[i].start.x][wordIndices[i].start.y].foundBy.size() == 0) && ((start.x == wordIndices[i].start.x) && (start.y == wordIndices[i].start.y)) && ((end.x == wordIndices[i].end.x) && (end.y == wordIndices[i].end.y)))
                 return wordList[i];

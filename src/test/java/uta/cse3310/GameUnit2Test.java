@@ -51,8 +51,8 @@ public class GameUnit2Test extends TestCase
 
         assertTrue(testPlayers.get(0).selectedPoint == null);
 
-        testGame.input( testPlayers.get(0), point);
-        testGame.input( testPlayers.get(0), point);
+        testGame.input( testPlayers.get(1), point);
+        testGame.input( testPlayers.get(1), point);
 
         assertTrue(testPlayers.get(0).selectedPoint == null);
     }

@@ -1,6 +1,8 @@
 package uta.cse3310;
 
 import java.util.ArrayList;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Game {
     public ArrayList<User> players;
@@ -9,11 +11,12 @@ public class Game {
     public boolean gameOver = false;
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
-    public static int wordCountLimit = 5; // max total word in the grid or 60% whichever is first 
+    public static int wordCountLimit = 10; // max total word in the grid or 60% whichever is first 
     public static double maxDensity = 0.6;  //  maximum density (60%)
 
     public Game(ArrayList<User> lobby)
     {
+        var startingTime = Instant.now();
         int placedWordsCount = 0;
         int filledCells = 0;
         players = new ArrayList<User>(lobby);
@@ -42,6 +45,11 @@ public class Game {
         }
         
         grid.fillEmptySpaces();
+        Duration timeToCreate = Duration.between(startingTime, Instant.now());
+        System.out.println(timeToCreate.toString());
+        grid.wordList = grid.addwordList.toArray(new String[0]);
+        grid.wordIndices = grid.wordLocations.toArray(new WordLocation[0]);
+        
         grid.printGrid();
     }
 

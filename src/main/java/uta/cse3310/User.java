@@ -22,6 +22,6 @@ public class User {
         currentGameScore = 0;
     }
     public void setColor(int color){
-        color = this.color;
+        this.color = color;
     }
 }
