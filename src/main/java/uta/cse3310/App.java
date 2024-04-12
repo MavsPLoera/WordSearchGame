@@ -45,6 +45,8 @@ import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Iterator;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.drafts.Draft;
@@ -74,6 +76,7 @@ public class App extends WebSocketServer {
     public ArrayList<User> allUsers = new ArrayList<>();
     public static ArrayList<Game> activeGames = new ArrayList<>();
     public Lobby[] lobbies = new Lobby[] { new Lobby(2), new Lobby(3), new Lobby(4) };
+    public static ArrayList<String> wordsfromfile = readWordsFromFile("word-list-filtered.txt");
 
     private Gson gson = new Gson();
 
@@ -204,6 +207,23 @@ public class App extends WebSocketServer {
 
     }
 
+    public static ArrayList<String> readWordsFromFile(String fileName) {
+        ArrayList<String> words = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                words.add(line.trim());
+            }
+    
+            // Shuffle the list to get a random order
+            Collections.shuffle(words);
+    
+        } catch (Exception e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return words;
+    }
+
     public static void main(String[] args) {
         // load word list
 
@@ -222,6 +242,12 @@ public class App extends WebSocketServer {
         A.setReuseAddr(true);
         A.start();
         System.out.println("websocket Server started on port: " + port);
+
+
+        //testing two games with the grids
+        ArrayList<User> lobbyie = new ArrayList<User>();//testing the grid creation
+        Game game = new Game(lobbyie);
+        Game game2 = new Game(lobbyie);
 
         Timer GameStart = new Timer();
         TimerTask task = new TimerTask() {

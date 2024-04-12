@@ -1,19 +1,29 @@
 package uta.cse3310;
 
+import java.util.ArrayList;
+import java.util.Random;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 
 public class Grid {
     public String[] wordList;
     public WordLocation[] wordIndices;
     public GridItem[][] grid;
     public Duration timeToCreate;
-    public float density;
     public float[] randomness;
     public int minimumRandomChar;
     public int maximumRandomChar;
+    private ArrayList<String> addwordList;//convert to string array later 
+    private ArrayList<WordLocation> wordLocations;//convert to WordLocation array late
 
+    private Random random = new Random();
+    //long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
+    //private Random random = new Random(seed);//
+    
+    {
+        addwordList = new ArrayList<>();
+        wordLocations = new ArrayList<>();
+    }
     private enum DIRECTION {
         VERTICALUP, DIAGONALUPRIGHT, HORIZONTALRIGHT, DIAGONALDOWNRIGHT, VERTICALDOWN, DIAGONALDOWNLEFT, HORIZONTALLEFT, DIGAONALUPLEFT
     }
@@ -25,11 +35,190 @@ public class Grid {
 
         var grid = new Grid();
         grid.grid = new GridItem[rowNumber][columnNumber];
+        // Initialize each grid item with a space characterx
+        for (int i = 0; i < rowNumber; i++) {
+            for (int j = 0; j < columnNumber; j++) {
+                grid.grid[i][j] = new GridItem(' '); 
+            }
+        }
 
 
         grid.timeToCreate = Duration.between(startingTime, Instant.now());
-
+        System.out.println(grid.timeToCreate.toString());
         return grid;
+    }
+
+    public boolean addWord(String word) {
+        int attempts = 100;  // Limit the number of placement attempts
+        while (attempts-- > 0) {
+            int row = random.nextInt(grid.length);
+            int col = random.nextInt(grid[0].length);
+
+            int directionIndex = random.nextInt(8);  
+
+            DIRECTION[] directions = DIRECTION.values(); 
+            DIRECTION direction = directions[directionIndex];
+
+            if (canPlaceWord(word, row, col, direction)) {
+                placeWord(word, row, col, direction);
+                addwordList.add(word);
+                return true;
+            }
+        }
+        return false;  
+    }
+
+    private void placeWord(String word, int row, int col, DIRECTION direction) {
+        Point start = new Point(col, row);
+        Point end = null; 
+        for (int i = 0; i < word.length(); i++) {
+            int currentRow = row;
+            int currentCol = col;
+
+            switch (direction) {
+                case HORIZONTALRIGHT:
+                    currentCol += i;
+                    break;
+                case HORIZONTALLEFT:
+                    currentCol -= i;
+                    break;
+                case VERTICALDOWN:
+                    currentRow += i;
+                    break;
+                case VERTICALUP:
+                    currentRow -= i;
+                    break;
+                case DIAGONALDOWNRIGHT:
+                    currentRow += i;
+                    currentCol += i;
+                    break;
+                case DIAGONALUPRIGHT:
+                    currentRow -= i;
+                    currentCol += i;
+                    break;
+                case DIAGONALDOWNLEFT:
+                    currentRow += i;
+                    currentCol -= i;
+                    break;
+                case DIGAONALUPLEFT:
+                    currentRow -= i;
+                    currentCol -= i;
+                    break;
+            }
+
+            grid[currentRow][currentCol].letter = word.charAt(i);
+            end = new Point(currentCol, currentRow);
+        }
+        if (end != null) {
+            wordLocations.add(new WordLocation(start, end));
+            // y means row 
+            // x mean col
+        }
+    }
+    
+    private boolean canPlaceWord(String word, int row, int col, DIRECTION direction) {
+        int len = word.length();
+    
+        // Check bounds based on direction
+        switch (direction) {
+            case HORIZONTALRIGHT:
+                if (col + len > grid[0].length) return false;
+                break;
+            case HORIZONTALLEFT:
+                if (col - len < -1) return false;
+                break;
+            case VERTICALDOWN:
+                if (row + len > grid.length) return false;
+                break;
+            case VERTICALUP:
+                if (row - len < -1) return false;
+                break;
+            case DIAGONALDOWNRIGHT:
+                if (row + len > grid.length || col + len > grid[0].length) return false;
+                break;
+            case DIAGONALUPRIGHT:
+                if (row - len < -1 || col + len > grid[0].length) return false;
+                break;
+            case DIAGONALDOWNLEFT:
+                if (row + len > grid.length || col - len < -1) return false;
+                break;
+            case DIGAONALUPLEFT:
+                if (row - len < -1 || col - len < -1) return false;
+                break;
+        }
+
+        
+        // Check for letter conflicts
+        for (int i = 0; i < len; i++) {
+            int currentRow = row;
+            int currentCol = col;
+
+            switch (direction) {
+                case HORIZONTALRIGHT:
+                    currentCol += i;
+                    break;
+                case HORIZONTALLEFT:
+                    currentCol -= i;
+                    break;
+                case VERTICALDOWN:
+                    currentRow += i;
+                    break;
+                case VERTICALUP:
+                    currentRow -= i;
+                    break;
+                case DIAGONALDOWNRIGHT:
+                    currentRow += i;
+                    currentCol += i;
+                    break;
+                case DIAGONALUPRIGHT:
+                    currentRow -= i;
+                    currentCol += i;
+                    break;
+                case DIAGONALDOWNLEFT:
+                    currentRow += i;
+                    currentCol -= i;
+                    break;
+                case DIGAONALUPLEFT:
+                    currentRow -= i;
+                    currentCol -= i;
+                    break;
+            }
+            //when looking for somewhere to put the word we will check its it empty or the letter is the same as what we need
+            if (grid[currentRow][currentCol].letter != ' ' && grid[currentRow][currentCol].letter != word.charAt(i)) {
+                return false; 
+            }
+        }
+
+        return true; // No conflicts; the word can be placed
+    }
+
+    public void fillEmptySpaces() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j].letter == ' ') {  // Assuming ' ' represents an empty space
+                    grid[i][j].letter = '_';  // Fill with _ for debugging
+                    // char randomChar = (char) (random.nextInt(26) + 'a');
+                    // grid[i][j].letter = randomChar;
+                }
+            }
+        }
+    }
+    
+    public void printGrid() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                System.out.print(grid[i][j].letter + " "); 
+            }
+            System.out.println(); 
+        }
+        System.out.println(addwordList.size()); 
+        System.out.println(addwordList.toString()); 
+        System.out.println("\nWord Locations:");
+        for (WordLocation location : wordLocations) {
+            System.out.println("Word at (" + location.start.x + ", " + location.start.y + 
+                               ") to (" + location.end.x + ", " + location.end.y + ")");
+        }
+
     }
 
     public String checkStartEnd(Point start, Point end) {

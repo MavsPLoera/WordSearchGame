@@ -7,9 +7,15 @@ public class Game {
     public Grid grid;
     public int totalGameTime = 300; //Timer set for 5 minutes
     public boolean gameOver = false;
+    public static int gridSize = 20; 
+    public static int totalCells = gridSize * gridSize;
+    public static int wordCountLimit = 5; // max total word in the grid or 60% whichever is first 
+    public static double maxDensity = 0.6;  //  maximum density (60%)
 
     public Game(ArrayList<User> lobby)
     {
+        int placedWordsCount = 0;
+        int filledCells = 0;
         players = new ArrayList<User>(lobby);
 
         //Set colors
@@ -20,6 +26,23 @@ public class Game {
         }
 
         grid = Grid.createGrid(20, 20);
+
+        for (String word : App.wordsfromfile) {
+            if (placedWordsCount >= wordCountLimit || (double)filledCells / totalCells > maxDensity) {
+                break;  // Stop adding words if limit or max density is reached
+            }
+
+            boolean added = grid.addWord(word);
+            if (added) {
+                placedWordsCount++;
+                filledCells += word.length();
+            } else {
+                System.out.println("Failed to add word: " + word);
+            }
+        }
+        
+        grid.fillEmptySpaces();
+        grid.printGrid();
     }
 
     public void gameOver() {

@@ -1,4 +1,6 @@
-var serverUrl = "ws://4.tcp.ngrok.io:12881";
+//var serverUrl = "ws://4.tcp.ngrok.io:12881";
+var serverUrl = "ws://localhost:9880";
+
 var connection = new WebSocket(serverUrl);
 showLoginPage();
 connection.onopen = function (evt) {
