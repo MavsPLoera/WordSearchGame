@@ -71,9 +71,10 @@ public class Game {
     public void displayHint() {
         //Chooses random number between 0 to grid.wordList.length
         int random = (int)(Math.random() + (grid.wordIndices.size()));
+        GridItem checkSelected = grid.grid[grid.wordIndices.get(random).start.x][grid.wordIndices.get(random).start.y];
 
-        //Will only highlight the start of the word as of now.
-        while(grid.checkWordFound(random) != true) {
+        //Highlights start of a word. Might need to check if the word is currently selected by to get a unique word not selected by a player.
+        while(checkSelected.foundBy.size() != 0) {
             random = (int)(Math.random() + (grid.wordIndices.size()));
         }
         grid.addSelection( grid.wordIndices.get(random).start, 5); //5 will be the hint color

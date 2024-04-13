@@ -241,12 +241,5 @@ public class Grid {
     public boolean checkWordList() {
         return wordIndices.size() == 0;
     }
-
-    public boolean checkWordFound(int numChoice) { 
-        if(grid[wordIndices.get(numChoice).start.x][wordIndices.get(numChoice).start.y].foundBy.size() == 0)
-            return true;
-
-        return false;
-    }
     
 }
