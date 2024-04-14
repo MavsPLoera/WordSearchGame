@@ -259,8 +259,6 @@ public class App extends WebSocketServer {
         App A = new App(port);
         A.setReuseAddr(true);
         A.start();
-        System.out.println("websocket Server started on port: " + port);
-
         Timer GameStart = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -270,6 +268,7 @@ public class App extends WebSocketServer {
                 {
                     Game game = iter.next();
                     game.tick();
+                    System.out.println("Tick...");
 
                     if(game.gameOver)
                         iter.remove();
@@ -279,6 +278,8 @@ public class App extends WebSocketServer {
         };
 
         //Count down timer for Game
+
+        System.out.println("websocket Server started on port: " + port);
         GameStart.scheduleAtFixedRate(task, 0 , 1000);
     }
 }
