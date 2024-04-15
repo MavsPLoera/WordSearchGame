@@ -155,7 +155,12 @@ public class App extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        onlineUsers.remove((User)conn.getAttachment());
+        var user = (User)conn.getAttachment();
+        if (user == null) return;
+        onlineUsers.remove(user);
+        for (var lobby : lobbies) {
+            lobby.removeUser(user);
+        }
     }
 
     @Override
