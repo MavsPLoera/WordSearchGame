@@ -269,8 +269,13 @@ public class App extends WebSocketServer {
             @Override
             public void run(){
                 Iterator<Game> iter = activeGames.iterator();
+
+                //Debug for knowing if games are being added/removed
+                System.out.println(activeGames);
+                
                 while(iter.hasNext())
                 {
+                    //System.out.println(activeGames);
                     Game game = iter.next();
                     game.tick();
                     System.out.println("Tick...");
@@ -281,8 +286,7 @@ public class App extends WebSocketServer {
                 }
             }
         };
-
-        //Count down timer for Game
+        //Count down timer for Game(s)
 
         System.out.println("websocket Server started on port: " + port);
         GameStart.scheduleAtFixedRate(task, 0 , 1000);
