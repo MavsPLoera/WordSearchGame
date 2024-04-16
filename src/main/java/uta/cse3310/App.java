@@ -72,15 +72,34 @@ public class App extends WebSocketServer {
         super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
     }
 
+    public static App instance;
+
     public ArrayList<User> onlineUsers = new ArrayList<>();
     public ArrayList<User> allUsers = new ArrayList<>();
     public static ArrayList<Game> activeGames = new ArrayList<>();
     public Lobby[] lobbies = new Lobby[] { new Lobby(2), new Lobby(3), new Lobby(4) };
     public static ArrayList<String> wordsfromfile = readWordsFromFile("word-list-filtered.txt");
 
+    public ArrayList<Connection> allConnections = new ArrayList<>();
+
     public static Gson gson = new Gson();
 
     public static String[] words;
+
+    public void broadcast(String message) {
+        for (var conn : allConnections) {
+            conn.send(message);
+        }
+    }
+
+    public Connection findWebSocketConnection(WebSocket socket) {
+        for (var conn : allConnections) {
+            if (conn.isForObject(socket)) {
+                return conn;
+            }
+        }
+        return null;
+    }
 
     public User createUser(String name) {
         for (var onlineUser : onlineUsers) {
@@ -108,7 +127,7 @@ public class App extends WebSocketServer {
         broadcast(gson.toJson(event));
     }
 
-    public void broadcastLobbies() {
+    private EventHolder<LobbyUpdateResponse> createLobbyEvent() {
         var event = new EventHolder<>("LobbyUpdateResponse", new LobbyUpdateResponse());
         String[][] lobbies = new String[3][];
         for (int i = 0; i < 3; i++) {
@@ -118,7 +137,12 @@ public class App extends WebSocketServer {
             }
         }
         event.eventData.lobbies = lobbies;
-        broadcast(gson.toJson(event));
+        return event;
+    }
+
+    public void broadcastLobbies() {
+        
+        broadcast(gson.toJson(createLobbyEvent()));
     }
 
     public void broadcastLeaderboard() {
@@ -149,24 +173,29 @@ public class App extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        // send all the data needed to render the lobby screen:
-        // user list, 
+        allConnections.add(new WebSocketConnection(conn));
     }
 
-    @Override
-    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        var user = (User)conn.getAttachment();
+    public void processClose(Connection conn) {
+        var user = conn.getAttachedUser();
         if (user == null) return;
         onlineUsers.remove(user);
         for (var lobby : lobbies) {
             lobby.removeUser(user);
         }
+        broadcastUserList();
+        broadcastLobbies();
     }
 
     @Override
-    public void onMessage(WebSocket conn, String message) {
-        try {
-        User user = conn.getAttachment();
+    public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        var c = findWebSocketConnection(conn);
+        processClose(c);
+        allConnections.remove(c);
+    }
+
+    public void processMessage(Connection conn, String message) {
+        var user = conn.getAttachedUser();
         System.out.println(message);
         var parser = JsonParser.parseString(message);
         var object = parser.getAsJsonObject();
@@ -176,14 +205,16 @@ public class App extends WebSocketServer {
                 var loginEvent = gson.fromJson(object.get("eventData"), UserLoginRequest.class);
                 user = createUser(loginEvent.username);
                 if (user == null) {
-                    conn.send("{ \"type\": \"LoginResponse\", \"eventData\": { \"loggedIn\": false } }");
+                    conn.send("{\"type\":\"LoginResponse\",\"eventData\":{\"loggedIn\":false}}");
                 } else {
                     user.socket = conn;
-                    conn.setAttachment(user);
+                    conn.setAttatchedUser(user);
                     onlineUsers.add(user);
-                    conn.send("{ \"type\": \"LoginResponse\", \"eventData\": { \"loggedIn\": true } }");
+                    conn.send("{\"type\":\"LoginResponse\",\"eventData\":{\"loggedIn\":true}}");
+                    conn.send(gson.toJson(new EventHolder<>("UserResponse", user)));
                     broadcastUserList();
                     broadcastLeaderboard();
+                    conn.send(gson.toJson(createLobbyEvent()));
                 }
                 break;
             case "JoinLobbyRequest":
@@ -214,6 +245,12 @@ public class App extends WebSocketServer {
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    @Override
+    public void onMessage(WebSocket conn, String message) {
+        try {
+            processMessage(findWebSocketConnection(conn), message);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -238,9 +275,6 @@ public class App extends WebSocketServer {
                 words.add(line.trim());
             }
     
-            // Shuffle the list to get a random order
-            Collections.shuffle(words);
-    
         } catch (Exception e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
@@ -262,27 +296,24 @@ public class App extends WebSocketServer {
         portString = System.getenv("WEBSOCKET_PORT");
         port = portString != null ? Integer.parseInt(portString) : 9880;
         App A = new App(port);
+        instance = A;
         A.setReuseAddr(true);
         A.start();
         Timer GameStart = new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run(){
-                Iterator<Game> iter = activeGames.iterator();
-
-                //Debug for knowing if games are being added/removed
-                //System.out.println(activeGames);
+                Iterator<Game> iter = App.activeGames.iterator();
 
                 while(iter.hasNext())
                 {
-                    //System.out.println(activeGames);
                     Game game = iter.next();
                     game.tick();
-                    System.out.println("Tick...");
-
-                    if(game.gameOver)
+                    
+                    if(game.gameOver) {
                         iter.remove();
-
+                        App.instance.broadcastLeaderboard();
+                    }
                 }
             }
         };

@@ -1,7 +1,5 @@
 package uta.cse3310;
 
-import org.java_websocket.WebSocket;
-
 public class User {
     public String name;
     // 0 outside of a game
@@ -9,7 +7,7 @@ public class User {
     public int currentGameScore;
     public int totalScore;
     // null when user is disconnected
-    public transient WebSocket socket;
+    public transient Connection socket;
     // null when not playing a game
     public transient Game currentGame;
     public transient Point selectedPoint;

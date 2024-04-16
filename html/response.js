@@ -68,7 +68,32 @@ function updateGame(grid, wordList){
         wordListDiv.innerHTML += wordList[i].word + " ";
     }
 }
-function updateChat(){
+function updateChat(user, message){
     let wordListDiv = document.getElementById("chatBox");
-    // wordListDiv.innerHTML += "" add an element that holds the username and message
+    wordListDiv.innerHTML += `<p><strong>${user}:</strong> ${message}</p>`;
+}
+
+function updateUser(name, color, score, gameScore){
+    let usernameLobby = document.getElementById("usernameLobby");
+    let scoreLobby = document.getElementById("scoreLobby");
+
+    usernameLobby.innerHTML = name;
+    scoreLobby.innerHTML = "Score: " + score;
+
+    let usernameGame = document.getElementById("usernameGame");
+    let scoreGame = document.getElementById("scoreGame");
+
+    usernameGame.innerHTML = name;
+    let button = document.createElement("button");
+    button.classList.add("grid-button");
+    button.style.backgroundColor = colors[color];  
+    usernameGame.appendChild(button);
+    scoreGame.innerHTML = "Game Score: " + gameScore;
+
+
+}
+
+function updateTimer(time){
+    let timer = document.getElementById("timer");
+    timer.innerHTML = time;
 }

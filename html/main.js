@@ -1,4 +1,4 @@
-var serverUrl = "ws://sp24.cse3310.org:9129";
+var serverUrl = "ws://6.tcp.ngrok.io:11391";
 
 var connection = new WebSocket(serverUrl);
 showLoginPage();
@@ -12,9 +12,9 @@ connection.onclose = function (evt) {
 
 connection.onmessage = function (evt) {
     var msg =  evt.data;
-    console.log("Message received:");
     const obj = JSON.parse(msg);
-    console.log(obj);
+    if (obj.type != "TimerResponse")
+        console.log(obj);
     switch (obj.type) {
         case "LoginResponse":
             if (obj.eventData.loggedIn) {
@@ -39,7 +39,7 @@ connection.onmessage = function (evt) {
             console.log("Start game is running");
             showGamePage();
             break;
-        case "EndGameResponse":
+        case "GameOverResponse":
             showLobbyPage();
             break;
         case "GameResponse":
@@ -47,6 +47,12 @@ connection.onmessage = function (evt) {
             break;
         case "ChatResponse":
             updateChat(obj.eventData.user, obj.eventData.message);
+            break;
+        case "UserResponse":
+            updateUser(obj.eventData.name, obj.eventData.color, obj.eventData.totalScore, obj.eventData.currentGameScore);
+            break;
+        case "TimerResponse":
+            updateTimer(obj.eventData);
             break;
         default:
             console.log(`unknown message type: ${obj.type}`);

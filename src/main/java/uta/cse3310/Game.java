@@ -10,7 +10,7 @@ import java.time.Instant;
 public class Game {
     public ArrayList<User> players;
     public Grid grid;
-    public int totalGameTime = 300; //Timer set for 5 minutes
+    public transient int totalGameTime = 300; //Timer set for 5 minutes
     public boolean gameOver = false;
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
@@ -19,7 +19,7 @@ public class Game {
 
     //Stats to be displayed for the user
     public static double maxDensity = 0.6;  //  maximum density (60%)
-    public Duration timeToCreate;
+    public double timeToCreate;
     //Need to get letter uniformity stat.
     //Can also maybe include the number directions the words are placed in.
 
@@ -42,10 +42,15 @@ public class Game {
         grid = Grid.createGrid(20, 20);
 
         while (true) {
-            var word = App.wordsfromfile.get(grid.random.nextInt(App.wordsfromfile.size()));
-
             if (placedWordsCount >= wordCountLimit || (double)filledCells / totalCells > maxDensity) {
                 break;  // Stop adding words if limit or max density is reached
+            }
+
+            var word = App.wordsfromfile.get(grid.random.nextInt(App.wordsfromfile.size()));
+            for (var alreadyPicked : grid.wordIndices) {
+                if (word.equals(alreadyPicked.word)) {
+                    continue;
+                }
             }
 
             boolean added = grid.addWord(word);
@@ -58,8 +63,8 @@ public class Game {
         }
         
         grid.fillEmptySpaces();
-        timeToCreate = Duration.between(startingTime, Instant.now());
-        System.out.println(timeToCreate.toString());
+        timeToCreate = Duration.between(startingTime, Instant.now()).toNanos() / 1e9d;
+        System.out.println(timeToCreate);
         
         grid.printGrid();
     }
@@ -72,18 +77,25 @@ public class Game {
             temp.currentGame = null;
         }
         gameOver = true;
+        sendUpdate();
+        var gameOverEvent = App.gson.toJson(new EventHolder<>("GameOverResponse", null));
+        for (var user : players) {
+            user.socket.send(gameOverEvent);
+        }
     }
 
     public void displayHint() {
         //Chooses random number between 0 to grid.wordList.length
-        int random = (int)(Math.random() + (grid.wordIndices.size()));
-        GridItem checkSelected = grid.grid[grid.wordIndices.get(random).start.x][grid.wordIndices.get(random).start.y];
+        WordLocation random = grid.wordIndices.get(grid.random.nextInt(grid.wordIndices.size()));
+        GridItem checkSelected = grid.grid[random.start.x][random.start.y];
 
         //Highlights start of a word. Might need to check if the word is currently selected by to get a unique word not selected by a player.
         while(checkSelected.foundBy.size() != 0) {
-            random = (int)(Math.random() + (grid.wordIndices.size()));
+            random = grid.wordIndices.get(grid.random.nextInt(grid.wordIndices.size()));
+            checkSelected = grid.grid[random.start.x][random.start.y];
         }
-        grid.addSelection( grid.wordIndices.get(random).start, 5); //5 will be the hint color
+        grid.addSelection(random.start, 5); //5 will be the hint color
+        sendUpdate();
     }
 
     public void validateAttempt(User attempter, Point start, Point end) {
@@ -135,13 +147,18 @@ public class Game {
     public void tick() {
         if(totalGameTime <= 0 || grid.checkWordList()) { 
             gameOver();
-            sendUpdate();
+            return;
         }
         else if(((totalGameTime % 30) == 0) && (totalGameTime != 300)) {
             displayHint();
-            sendUpdate();
         }
 
-        totalGameTime--; 
+        var event = App.gson.toJson(new EventHolder<>("TimerResponse", totalGameTime));
+
+        for (var user : players) {
+            user.socket.send(event);
+        }
+
+        totalGameTime--;
     }
 }

@@ -14,7 +14,7 @@ function addBackground(button, list){
             ${colors[list[0]]} 0deg,
             ${colors[list[0]]} 180deg,
             ${colors[list[1]]} 180deg,
-            ${colors[list[1]]} 360deg,
+            ${colors[list[1]]} 360deg
         )`;
     } else if(list.length === 3){
         button.style.backgroundImage = `conic-gradient(

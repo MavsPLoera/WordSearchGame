@@ -32,3 +32,22 @@ function selectGrid(x, y){
         }
     }));
 }
+
+function addChat(event) {
+    event.preventDefault(); 
+
+    let message = document.getElementById("message").value;
+  
+    if(message !== "" && message){
+          connection.send(JSON.stringify({
+              "type": "ChatRequest",
+              "eventData": {
+                  "message": message
+              }
+          }));
+
+    }
+    document.getElementById("message").value = "";
+    return false;
+
+}
