@@ -271,8 +271,8 @@ public class App extends WebSocketServer {
                 Iterator<Game> iter = activeGames.iterator();
 
                 //Debug for knowing if games are being added/removed
-                System.out.println(activeGames);
-                
+                //System.out.println(activeGames);
+
                 while(iter.hasNext())
                 {
                     //System.out.println(activeGames);
