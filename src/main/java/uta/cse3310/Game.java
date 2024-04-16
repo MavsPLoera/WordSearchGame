@@ -14,7 +14,7 @@ public class Game {
     public boolean gameOver = false;
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
-    public static int wordCountLimit = 30; // max total word in the grid or 60% whichever is first 
+    public static int wordCountLimit = 10; // max total word in the grid or 60% whichever is first 
 
 
     //Stats to be displayed for the user
