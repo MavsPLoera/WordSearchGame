@@ -1,4 +1,4 @@
-var serverUrl = "ws://6.tcp.ngrok.io:11391";
+var serverUrl = "ws://sp24.cse3310.org:9129";
 
 var connection = new WebSocket(serverUrl);
 showLoginPage();
