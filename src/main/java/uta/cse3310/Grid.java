@@ -179,6 +179,7 @@ public class Grid {
     public void fillEmptySpaces() {
         int counter = 0;
         ArrayList<Character> alphabet = new ArrayList<>();
+        //Maybe change character to a class to keep track of different letters being used
         for (char c = 'a'; c <= 'z'; c++) {
             alphabet.add(c);
         }

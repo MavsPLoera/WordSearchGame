@@ -15,7 +15,13 @@ public class Game {
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
     public static int wordCountLimit = 30; // max total word in the grid or 60% whichever is first 
+
+
+    //Stats to be displayed for the user
     public static double maxDensity = 0.6;  //  maximum density (60%)
+    public Duration timeToCreate;
+    //Need to get letter uniformity stat.
+    //Can also maybe include the number directions the words are placed in.
 
     public Game(ArrayList<User> lobby)
     {
@@ -52,7 +58,7 @@ public class Game {
         }
         
         grid.fillEmptySpaces();
-        Duration timeToCreate = Duration.between(startingTime, Instant.now());
+        timeToCreate = Duration.between(startingTime, Instant.now());
         System.out.println(timeToCreate.toString());
         
         grid.printGrid();
