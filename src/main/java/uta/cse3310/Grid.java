@@ -3,6 +3,7 @@ package uta.cse3310;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.HashMap;
 
 public class Grid {
     public ArrayList<WordLocation> wordIndices = new ArrayList<>();
@@ -194,13 +195,43 @@ public class Grid {
                        Collections.shuffle(alphabet,random);
                        counter = 0 ;
                     }
-                    grid[i][j].letter = '_';  // Fill with _ for debugging
+                    //grid[i][j].letter = '_';  // Fill with _ for debugging
 
                 }
             }
         }
     }
-    
+
+    // takes all the characters it the grid and puts them in a hash map the key is the letter an th value is the number of occurances
+    public HashMap<Character, Integer> countCharacterFrequencies() {
+        HashMap<Character, Integer> frequencyMap = new HashMap<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                char currentChar = grid[i][j].letter;
+                frequencyMap.put(currentChar, frequencyMap.getOrDefault(currentChar, 0) + 1);
+            }
+        }
+        return frequencyMap;
+    }
+
+    //This is chi-squared fuction this is not the distrobution of each letter but it is the deveation fron the expected 
+    // the expected woudl be the total number of letter / 26 all the letters in the alphabet.
+    public double calculatechisquared() {
+        HashMap<Character, Integer> actualFrequencies = countCharacterFrequencies();
+        double chiSquared = 0.0;
+        double expected =  Game.totalCells/26;
+
+        for (char ch = 'a'; ch <= 'z'; ch++) {
+            double observed = actualFrequencies.getOrDefault(ch, 0);
+
+            if (expected != 0) {
+                chiSquared += Math.pow(observed - expected, 2) / expected;
+            }
+        }
+        System.out.println(actualFrequencies.toString());
+        return chiSquared;
+    }
+
     public void printGrid() {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {

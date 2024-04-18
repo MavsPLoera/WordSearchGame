@@ -14,13 +14,13 @@ public class Game {
     public boolean gameOver = false;
     public static int gridSize = 20; 
     public static int totalCells = gridSize * gridSize;
-    public static int wordCountLimit = 10; // max total word in the grid or 60% whichever is first 
-
+    public static int wordCountLimit = 10; // max total word in the grid or 60% whichever is first
+    
 
     //Stats to be displayed for the user
     public static double maxDensity = 0.6;  //  maximum density (60%)
     public double timeToCreate;
-    //Need to get letter uniformity stat.
+    public double uniformity = -1;   // -1 because the value can be zero if the grid has a perfect distrobution
     //Can also maybe include the number directions the words are placed in.
 
     public Game(ArrayList<User> lobby)
@@ -39,7 +39,7 @@ public class Game {
             player.currentGame = this;
         }
 
-        grid = Grid.createGrid(20, 20);
+        grid = Grid.createGrid(gridSize, gridSize);
 
         while (true) {
             if (placedWordsCount >= wordCountLimit || (double)filledCells / totalCells > maxDensity) {
@@ -65,7 +65,8 @@ public class Game {
         grid.fillEmptySpaces();
         timeToCreate = Duration.between(startingTime, Instant.now()).toNanos() / 1e9d;
         System.out.println(timeToCreate);
-        
+        uniformity = grid.calculatechisquared();
+        System.out.println(uniformity);
         grid.printGrid();
     }
 
