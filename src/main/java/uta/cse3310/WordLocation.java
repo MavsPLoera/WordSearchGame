@@ -6,14 +6,13 @@ public class WordLocation {
     public String word;
     public Point start;
     public Point end;
-    public Direction direction;
     public boolean found;
     public transient ArrayList<GridItem> letters = new ArrayList<>();
     
-    public WordLocation(String word, Point start, Point end, Direction direction) {
+    public WordLocation(String word, Point start, Point end) {
         this.word = word;
         this.start = start;
         this.end = end;
-        this.direction = direction;
+
     }
 }

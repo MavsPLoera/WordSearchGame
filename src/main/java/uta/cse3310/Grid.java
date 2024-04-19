@@ -14,6 +14,7 @@ public class Grid {
 
     private static final long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
     public static boolean useSeed = false;
+    public static boolean debugFill = false;
     public transient Random random = useSeed ? new Random(seed) : new Random();
     //private Random random = new Random(seed);//
 
@@ -42,15 +43,17 @@ public class Grid {
         while (attempts-- > 0) {
             int row = random.nextInt(grid.length);
             int col = random.nextInt(grid[0].length);
+            int horizontal;
+            int vertical;
 
-            int directionIndex = random.nextInt(8);  
+            do {
+                horizontal = random.nextInt(3) - 1; // -1, 0, or 1
+                vertical = random.nextInt(3) - 1;
+            } while (horizontal == 0 && vertical == 0); // both can not be zero
 
-            Direction[] directions = Direction.values(); 
-            Direction direction = directions[directionIndex];
-
-            if (canPlaceWord(word, row, col, direction)) {
-                var location = new WordLocation(word, new Point(row, col), null, direction);
-                placeWord(word, row, col, direction, location);
+            if (canPlaceWord(word, row, col, horizontal, vertical)) {
+                var location = new WordLocation(word, new Point(row, col), null);
+                placeWord(word, row, col, horizontal, vertical, location);
                 wordIndices.add(location);
                 return true;
             }
@@ -58,42 +61,12 @@ public class Grid {
         return false;  
     }
 
-    private void placeWord(String word, int row, int col, Direction direction, WordLocation location) {
+    private void placeWord(String word, int row, int col, int horizontal , int vertical, WordLocation location) {
+        //vertical or horizontil are the direction the word should be placed
         for (int i = 0; i < word.length(); i++) {
-            int currentRow = row;
-            int currentCol = col;
-
-            switch (direction) {
-                case HORIZONTALRIGHT:
-                    currentCol += i;
-                    break;
-                case HORIZONTALLEFT:
-                    currentCol -= i;
-                    break;
-                case VERTICALDOWN:
-                    currentRow += i;
-                    break;
-                case VERTICALUP:
-                    currentRow -= i;
-                    break;
-                case DIAGONALDOWNRIGHT:
-                    currentRow += i;
-                    currentCol += i;
-                    break;
-                case DIAGONALUPRIGHT:
-                    currentRow -= i;
-                    currentCol += i;
-                    break;
-                case DIAGONALDOWNLEFT:
-                    currentRow += i;
-                    currentCol -= i;
-                    break;
-                case DIGAONALUPLEFT:
-                    currentRow -= i;
-                    currentCol -= i;
-                    break;
-            }
-
+            int currentCol = col + (i * horizontal);
+            int currentRow = row + (i * vertical);
+          
             var item = grid[currentRow][currentCol];
             item.letter = word.charAt(i);
             location.letters.add(item);
@@ -101,80 +74,23 @@ public class Grid {
         }
     }
     
-    private boolean canPlaceWord(String word, int row, int col, Direction direction) {
-        int len = word.length();
-    
-        // Check bounds based on direction
-        switch (direction) {
-            case HORIZONTALRIGHT:
-                if (col + len > grid[0].length) return false;
-                break;
-            case HORIZONTALLEFT:
-                if (col - len < -1) return false;
-                break;
-            case VERTICALDOWN:
-                if (row + len > grid.length) return false;
-                break;
-            case VERTICALUP:
-                if (row - len < -1) return false;
-                break;
-            case DIAGONALDOWNRIGHT:
-                if (row + len > grid.length || col + len > grid[0].length) return false;
-                break;
-            case DIAGONALUPRIGHT:
-                if (row - len < -1 || col + len > grid[0].length) return false;
-                break;
-            case DIAGONALDOWNLEFT:
-                if (row + len > grid.length || col - len < -1) return false;
-                break;
-            case DIGAONALUPLEFT:
-                if (row - len < -1 || col - len < -1) return false;
-                break;
-        }
+    private boolean canPlaceWord(String word, int row, int col, int horizontal, int vertical) {
+        for (int i = 0; i < word.length(); i++) {
+            int currentRow = row + (i * vertical);
+            int currentCol = col + (i * horizontal);
 
-        
-        // Check for letter conflicts
-        for (int i = 0; i < len; i++) {
-            int currentRow = row;
-            int currentCol = col;
-
-            switch (direction) {
-                case HORIZONTALRIGHT:
-                    currentCol += i;
-                    break;
-                case HORIZONTALLEFT:
-                    currentCol -= i;
-                    break;
-                case VERTICALDOWN:
-                    currentRow += i;
-                    break;
-                case VERTICALUP:
-                    currentRow -= i;
-                    break;
-                case DIAGONALDOWNRIGHT:
-                    currentRow += i;
-                    currentCol += i;
-                    break;
-                case DIAGONALUPRIGHT:
-                    currentRow -= i;
-                    currentCol += i;
-                    break;
-                case DIAGONALDOWNLEFT:
-                    currentRow += i;
-                    currentCol -= i;
-                    break;
-                case DIGAONALUPLEFT:
-                    currentRow -= i;
-                    currentCol -= i;
-                    break;
+            // Check bounds for the word we are trying to place
+            if (currentRow < 0 || currentRow >= grid.length || currentCol < 0 || currentCol >= grid[0].length) {
+                return false;
             }
+
             //when looking for somewhere to put the word we will check its it empty or the letter is the same as what we need
             if (grid[currentRow][currentCol].letter != ' ' && grid[currentRow][currentCol].letter != word.charAt(i)) {
                 return false; 
             }
         }
 
-        return true; // No conflicts; the word can be placed
+        return true; // No conflicts the word can be placed
     }
 
     public void fillEmptySpaces() {
@@ -195,8 +111,9 @@ public class Grid {
                        Collections.shuffle(alphabet,random);
                        counter = 0 ;
                     }
-                    //grid[i][j].letter = '_';  // Fill with _ for debugging
-
+                    if(debugFill){
+                        grid[i][j].letter = '_';  // Fill with _ for debugging
+                    }
                 }
             }
         }
@@ -208,7 +125,9 @@ public class Grid {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 char currentChar = grid[i][j].letter;
-                frequencyMap.put(currentChar, frequencyMap.getOrDefault(currentChar, 0) + 1);
+                if(currentChar != ' ' || currentChar != '_'){
+                    frequencyMap.put(currentChar, frequencyMap.getOrDefault(currentChar, 0) + 1);
+                }
             }
         }
         return frequencyMap;
@@ -239,12 +158,14 @@ public class Grid {
             }
             System.out.println(); 
         }
+        for(WordLocation location : wordIndices){
+            System.out.println(location.word);
+        }
         System.out.println("\nWord Locations:");
         for (WordLocation location : wordIndices) {
             System.out.println("Word at (" + location.start.x + ", " + location.start.y + 
                                ") to (" + location.end.x + ", " + location.end.y + ")");
         }
-
     }
 
     public WordLocation checkStartEnd(Point start, Point end) {
