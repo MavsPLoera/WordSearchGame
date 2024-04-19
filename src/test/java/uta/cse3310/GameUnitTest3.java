@@ -5,14 +5,14 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import java.util.ArrayList;
 
-public class GameUnit3Test extends TestCase
+public class GameUnitTest3 extends TestCase
 {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public GameUnit3Test( String testName )
+    public GameUnitTest3(String testName )
     {
         super( testName );
     }

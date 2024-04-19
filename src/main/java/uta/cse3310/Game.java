@@ -18,9 +18,11 @@ public class Game {
     
 
     //Stats to be displayed for the user
-    public static double maxDensity = 0.6;  //  maximum density (60%)
+    public static double maxDensity = 0.75;  //  maximum density (68%)
     public double timeToCreate;
     public double uniformity = -1;   // -1 because the value can be zero if the grid has a perfect distrobution
+    public double density;
+    public int intersections;
     //Can also maybe include the number directions the words are placed in.
 
     public Game(ArrayList<User> lobby)
@@ -34,15 +36,15 @@ public class Game {
         for(int i = 0; i < players.size(); i++)
         {
             var player = players.get(i);
-            player.setColor(i + 1);
-            System.out.println("did the thing");
+            player.setColor(i);
             player.currentGame = this;
+            player.socket.send(App.gson.toJson(new EventHolder<>("UserResponse", player)));
         }
 
         grid = Grid.createGrid(gridSize, gridSize);
 
         while (true) {
-            if (placedWordsCount >= wordCountLimit || (double)filledCells / totalCells > maxDensity) {
+            if ((double)filledCells / totalCells > maxDensity) {
                 break;  // Stop adding words if limit or max density is reached
             }
 
@@ -53,10 +55,14 @@ public class Game {
                 }
             }
 
-            boolean added = grid.addWord(word);
-            if (added) {
+            var added = grid.addWord(word);
+            if (added != null) {
                 placedWordsCount++;
-                filledCells += word.length();
+                for (var item : added.letters) {
+                    if (item.wordCount == 1) {
+                        filledCells++;
+                    }
+                }
             } else {
                 System.out.println("Failed to add word: " + word);
             }
@@ -66,6 +72,14 @@ public class Game {
         timeToCreate = Duration.between(startingTime, Instant.now()).toNanos() / 1e9d;
         System.out.println(timeToCreate);
         uniformity = grid.calculatechisquared();
+        density = (double)filledCells / totalCells;
+        for (var row : grid.grid) {
+            for (var item : row) {
+                if (item.wordCount > 1) {
+                    intersections += item.wordCount;
+                }
+            }
+        }
         System.out.println(uniformity);
         grid.printGrid();
     }
@@ -95,7 +109,7 @@ public class Game {
             random = grid.wordIndices.get(grid.random.nextInt(grid.wordIndices.size()));
             checkSelected = grid.grid[random.start.x][random.start.y];
         }
-        grid.addSelection(random.start, 5); //5 will be the hint color
+        grid.addSelection(random.start, 4); //4 will be the hint color
         sendUpdate();
     }
 
@@ -111,6 +125,7 @@ public class Game {
             }
 
             grid.wordIndices.remove(wordFound);
+            wordFound.letters.getFirst().selectedBy.remove((Object)4);
         }
 
         //Remove selection from word grid.
@@ -141,6 +156,7 @@ public class Game {
         var event = App.gson.toJson(new EventHolder<>("GameResponse", this));
         for (var user : players) {
             user.socket.send(event);
+            user.socket.send(App.gson.toJson(new EventHolder<>("UserResponse", user)));
         }
     }
 

@@ -84,6 +84,8 @@ public class App extends WebSocketServer {
 
     public static Gson gson = new Gson();
 
+    private static String startMessage = gson.toJson(new EventHolder<>("ConnectionStartResponse", new ConnectionStartResponse(System.getenv("VERSION"))));
+
     public static String[] words;
 
     public void broadcast(String message) {
@@ -174,6 +176,7 @@ public class App extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         allConnections.add(new WebSocketConnection(conn));
+        conn.send(startMessage);
     }
 
     public void processClose(Connection conn) {
@@ -183,6 +186,13 @@ public class App extends WebSocketServer {
         for (var lobby : lobbies) {
             lobby.removeUser(user);
         }
+        if (user.currentGame != null) {
+            user.currentGameScore = 0;
+            user.selectedPoint = null;
+            user.currentGame.players.remove(user);
+            user.currentGame.sendUpdate();
+            user.currentGame = null;
+        }
         broadcastUserList();
         broadcastLobbies();
     }
@@ -190,8 +200,8 @@ public class App extends WebSocketServer {
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         var c = findWebSocketConnection(conn);
-        processClose(c);
         allConnections.remove(c);
+        processClose(c);
     }
 
     public void processMessage(Connection conn, String message) {
@@ -203,14 +213,23 @@ public class App extends WebSocketServer {
         {
             case "UserLoginRequest":
                 var loginEvent = gson.fromJson(object.get("eventData"), UserLoginRequest.class);
+                var event = new EventHolder<>("LoginResponse", new LoginResponse());
+                event.eventData.loggedIn = false;
+                if (loginEvent.username.length() < 3 || loginEvent.username.length() > 10) {
+                    event.eventData.error = "Usernames must be 3-10 letters";
+                    conn.send(gson.toJson(event));
+                    break;
+                } 
                 user = createUser(loginEvent.username);
                 if (user == null) {
-                    conn.send("{\"type\":\"LoginResponse\",\"eventData\":{\"loggedIn\":false}}");
+                    event.eventData.error = "User already logged in";
+                    conn.send(gson.toJson(event));
                 } else {
                     user.socket = conn;
                     conn.setAttatchedUser(user);
                     onlineUsers.add(user);
-                    conn.send("{\"type\":\"LoginResponse\",\"eventData\":{\"loggedIn\":true}}");
+                    event.eventData.loggedIn = true;
+                    conn.send(gson.toJson(event));
                     conn.send(gson.toJson(new EventHolder<>("UserResponse", user)));
                     broadcastUserList();
                     broadcastLeaderboard();

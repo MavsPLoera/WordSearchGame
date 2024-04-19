@@ -8,17 +8,17 @@ import java.util.HashMap;
 public class Grid {
     public ArrayList<WordLocation> wordIndices = new ArrayList<>();
     public GridItem[][] grid;
-    public float[] randomness;
-    public int minimumRandomChar;
-    public int maximumRandomChar;
 
-    private static final long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
+    private static long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
     public static boolean useSeed = false;
     public static boolean debugFill = false;
     public transient Random random = useSeed ? new Random(seed) : new Random();
     //private Random random = new Random(seed);//
 
     static {
+        var testSeed = System.getenv("TEST_GRID");
+        if (testSeed != null)
+            seed = Integer.parseInt(testSeed);
         if (System.getenv("USE_SEED") != null)
             useSeed = true;
     }
@@ -38,7 +38,7 @@ public class Grid {
         return grid;
     }
 
-    public boolean addWord(String word) {
+    public WordLocation addWord(String word) {
         int attempts = 100;  // Limit the number of placement attempts
         while (attempts-- > 0) {
             int row = random.nextInt(grid.length);
@@ -55,10 +55,10 @@ public class Grid {
                 var location = new WordLocation(word, new Point(row, col), null);
                 placeWord(word, row, col, horizontal, vertical, location);
                 wordIndices.add(location);
-                return true;
+                return location;
             }
         }
-        return false;  
+        return null;  
     }
 
     private void placeWord(String word, int row, int col, int horizontal , int vertical, WordLocation location) {
@@ -68,6 +68,7 @@ public class Grid {
             int currentRow = row + (i * vertical);
           
             var item = grid[currentRow][currentCol];
+            item.wordCount++;
             item.letter = word.charAt(i);
             location.letters.add(item);
             location.end = new Point(currentRow, currentCol);
@@ -184,10 +185,7 @@ public class Grid {
 
     public void removeSelection(Point point, int color) {
         //Get size of the selectedBy arrayList. If the color (number) is in the list remove.
-        for(int i = 0; i < grid[point.x][point.y].selectedBy.size(); i++) {
-            if(grid[point.x][point.y].selectedBy.get(i) == color)
-                grid[point.x][point.y].selectedBy.remove(i);
-        }
+        grid[point.x][point.y].selectedBy.remove((Object)color);
     }
 
     //Used for gameover seqeucne if result is true.

@@ -1,4 +1,4 @@
-var serverUrl = "ws://sp24.cse3310.org:9129";
+var serverUrl = "ws://sp24.cse3310.org:" + (location.port + 100);
 
 var connection = new WebSocket(serverUrl);
 showLoginPage();
@@ -16,6 +16,9 @@ connection.onmessage = function (evt) {
     if (obj.type != "TimerResponse")
         console.log(obj);
     switch (obj.type) {
+        case "ConnectionStartResponse":
+            document.getElementById("title").innerHTML += obj.eventData.version;
+            break;
         case "LoginResponse":
             if (obj.eventData.loggedIn) {
                 showgridPage();
@@ -36,14 +39,13 @@ connection.onmessage = function (evt) {
             updateLeaderboard(obj.eventData);
             break;
         case "StartGameResponse":
-            console.log("Start game is running");
             showGamePage();
             break;
         case "GameOverResponse":
             showLobbyPage();
             break;
         case "GameResponse":
-            updateGame(obj.eventData.grid.grid, obj.eventData.grid.wordIndices);
+            updateGame(obj.eventData.grid.grid, obj.eventData.grid.wordIndices, obj.eventData.players, obj.eventData.timeToCreate, obj.eventData.uniformity, obj.eventData.intersections, obj.eventData.density);
             break;
         case "ChatResponse":
             updateChat(obj.eventData.user, obj.eventData.message);
@@ -63,6 +65,7 @@ connection.onmessage = function (evt) {
 function showgridPage() {
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('lobby').style.display = 'block';
+    document.getElementById('welcome').style.display = 'none';
 }
 
 function showLoginPage() {
@@ -72,10 +75,12 @@ function showLoginPage() {
 function showLobbyPage() {
     document.getElementById('game').style.display = 'none';
     document.getElementById('lobby').style.display = 'block';
+    document.getElementById('welcome').style.display = 'none';
 }
 function showGamePage() {
     document.getElementById('lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
+    document.getElementById('welcome').style.display = 'none';
 }
 
 

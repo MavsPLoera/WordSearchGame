@@ -4,15 +4,20 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import java.util.ArrayList;
+import org.java_websocket.WebSocket;
+import org.java_websocket.drafts.Draft;
+import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 
-public class GameUnit3Test extends TestCase
+public class GameUnitTest extends TestCase
 {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public GameUnit3Test( String testName )
+    public GameUnitTest( String testName )
     {
         super( testName );
     }
@@ -22,11 +27,11 @@ public class GameUnit3Test extends TestCase
      */
     public static Test suite()
     {
-        return new TestSuite( GameUnit3Test.class );
+        return new TestSuite( GameUnitTest.class );
     }
 
-    //Testing adding to a players score on gameover
-    public void testGame3()
+    //Testing a player selecting a point
+    public void testGame1()
     {
         ArrayList<User> testPlayers = new ArrayList<User>(); 
         User p1 = new User();
@@ -40,16 +45,13 @@ public class GameUnit3Test extends TestCase
         testPlayers.add(p2);
 
         Game testGame = new Game(testPlayers);
-        p1.addToCurrentScore(20);
-        p2.addToCurrentScore(10);
-        assertTrue(p1.currentGameScore == 20);
-        assertTrue(p2.currentGameScore == 10);
+        Point point = new Point();
+        point.x = 2;
+        point.y = 2;
 
-        testGame.gameOver();
+        testGame.input( testPlayers.get(0), point);
+        testGame.input( testPlayers.get(0), point);
 
-        assertTrue(testGame.gameOver == true);
-        assertTrue(p1.totalScore == 20);
-        assertTrue(p2.totalScore == 10);
-        
+        assertTrue(testPlayers.get(0).selectedPoint == null);
     }
 }

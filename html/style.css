@@ -1,3 +1,4 @@
+
 .form-group{
     display: flex;
     flex-direction: column;
@@ -5,7 +6,7 @@
 
 
 .lobby{
-    border: 2px solid black;
+    margin: 10px
 }
 
 .box1 {
@@ -21,7 +22,7 @@
 
 .box2 {
     border: 2px solid black;
-    background-color: lightgreen;
+    background-color: lightpink;
     height: 800px;
     width: 200px;
     float : right;
@@ -79,42 +80,8 @@
 }
 #submit{
     position: absolute;
-    top: 55%;
+    top: 57%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.animation-container {
-    position: relative;
-    height: 150px; 
-    overflow: hidden;
-    margin-bottom: 20px; 
-}
-
-.animation-container h1 {
-    position: absolute;
-    top: -150px; 
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Apple Chancery', cursive; 
-    font-size: 32px; 
-    color: #0000FF; 
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); 
-    animation: slide-down 2s ease-in-out forwards;
-}
-
-@keyframes slide-down {
-    0% {
-        top: -150px;
-    }
-    100% {
-        top: 0;
-    }
-}
-.animation-container {
-    display: none;
-}
-
-.login-page .animation-container {
-    display: block;
-}
-
+.

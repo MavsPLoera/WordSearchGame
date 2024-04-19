@@ -39,3 +39,13 @@ function addBackground(button, list){
     }
 
 }
+
+function toggleStats(){
+    let statsDiv = document.getElementById("stats");
+    let displayStyle = window.getComputedStyle(statsDiv).display;
+    if (statsDiv.style.display === "none" || statsDiv.style.display === "") {
+        statsDiv.style.display = "flex"; 
+    } else {
+        statsDiv.style.display = "none";
+    }
+}

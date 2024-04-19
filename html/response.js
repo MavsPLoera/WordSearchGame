@@ -1,5 +1,3 @@
-
-
 function updatePlayerList(playerList){
     playerListElement = document.getElementById("playerList");
     playerListElement.innerHTML = "";
@@ -31,7 +29,22 @@ function updateLeaderboard(leaderBoardInfo){
 
 
 
-function updateGame(grid, wordList){
+function updateGame(grid, wordList, players, timeToCreate, uniformity, intersections, density){
+    let timeToCreateDiv = document.getElementById("timeToCreate");
+    timeToCreateDiv.innerHTML = timeToCreate;
+    let uniformityDiv = document.getElementById("uniformity");
+    uniformityDiv.innerHTML = uniformity;
+    let intersectionsDiv = document.getElementById("intersections");
+    intersectionsDiv.innerHTML = intersections;
+    let densityDiv = document.getElementById("density");
+    densityDiv.innerHTML = density;
+
+    // Update leaderboard
+    let gameLeaderboardDiv = document.getElementById("gameLeaderboard");
+    gameLeaderboardDiv.innerHTML = "";
+    for(let i = 0; i < players.length; i++){
+        gameLeaderboardDiv.innerHTML += `<p><strong>${players[i].name}:</strong> ${players[i].currentGameScore}</p>`;
+    }
     // Update word grid
     let gridDiv = document.getElementById("gameGrid");
     gridDiv.innerHTML = "";
