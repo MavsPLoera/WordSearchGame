@@ -125,7 +125,7 @@ public class Game {
             }
 
             grid.wordIndices.remove(wordFound);
-            wordFound.letters.getFirst().selectedBy.remove((Object)4);
+            wordFound.letters.get(0).selectedBy.remove((Object)4);
         }
 
         //Remove selection from word grid.
