@@ -1,17 +1,28 @@
 package uta.cse3310;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.time.Duration;
+import java.time.Instant;
+
 public class GridUnitTest extends TestCase
 {
     private Grid grid;//10*10
     private Grid testgrid;//20*20
+    //public ArrayList<WordLocation> wordIndices = new ArrayList<>();
     private static long seed = 1234567L;// this is the seed that is used but it 
     //is not set from the test and it is in the grid class itself
+    public static double maxDensity = 0.75;  //  maximum density (68%)
+    public double timeToCreate;
+    public double uniformity = -1;   // -1 because the value can be zero if the grid has a perfect distrobution
+    public double density;
+    public int intersections;
+    public int totalCells = 400;
 
 
     /**
@@ -54,8 +65,6 @@ public class GridUnitTest extends TestCase
                 assertTrue(testgrid.grid[i][j].letter == ' ');
             }
         }
-        
-
     }
 
     // we test the add word beause the placeword and canplaceword are prvate methods
@@ -110,13 +119,90 @@ public class GridUnitTest extends TestCase
 
     }
 
-    public void testcountCharacterFrequencies(){
-        HashMap<Character, Integer> frequencyMap = grid.countCharacterFrequencies();
-        System.out.println(frequencyMap.toString());
-        assertFalse(frequencyMap.isEmpty());
+    public void test1fullplacement(){
+        grid = Grid.createGrid(20, 20);
+        int placedWordsCount = 0;
+        int filledCells = 0;
+        double timeToCreate = 0;
+        var startingTime = Instant.now();
+        while (true) {
+            if ((double)filledCells / totalCells > maxDensity) {
+                break;  // Stop adding words if limit or max density is reached
+            }
+
+            var word = App.wordsfromfile.get(grid.random.nextInt(App.wordsfromfile.size()));
+            for (var alreadyPicked : grid.wordIndices) {
+                if (word.equals(alreadyPicked.word)) {
+                    continue;
+                }
+            }
+
+            var added = grid.addWord(word);
+            if (added != null) {
+                placedWordsCount++;
+                for (var item : added.letters) {
+                    if (item.wordCount == 1) {
+                        filledCells++;
+                    }
+                }
+            } else {
+                System.out.println("Failed to add word: " + word);
+            }
+        }
+
+        //make sure the grid is filled to the right density
+        assertTrue((double)filledCells / totalCells > maxDensity);
+        //make sure the grid is made in under 1 second
+        timeToCreate = Duration.between(startingTime, Instant.now()).toNanos() / 1e9d;
+        assertTrue(timeToCreate<1);
+        //the word list must have atleast 10 words
+        assertTrue(grid.wordIndices.size()>10);
+        assertTrue(placedWordsCount>10);
+
+
+    }
+    public void test2fullplacement(){
+        grid = Grid.createGrid(20, 20);
+        int placedWordsCount = 0;
+        int filledCells = 0;
+        while (true) {
+            if ((double)filledCells / totalCells > maxDensity) {
+                break;  // Stop adding words if limit or max density is reached
+            }
+
+            var word = App.wordsfromfile.get(grid.random.nextInt(App.wordsfromfile.size()));
+            for (var alreadyPicked : grid.wordIndices) {
+                if (word.equals(alreadyPicked.word)) {
+                    continue;
+                }
+            }
+
+            var added = grid.addWord(word);
+            if (added != null) {
+                placedWordsCount++;
+                for (var item : added.letters) {
+                    if (item.wordCount == 1) {
+                        filledCells++;
+                    }
+                }
+            } else {
+                System.out.println("Failed to add word: " + word);
+            }
+        }
+        for (var row : grid.grid) {
+            for (var item : row) {
+                if (item.wordCount > 1) {
+                    intersections += item.wordCount;
+                }
+            }
+        }
+        //make sure we find intersections when we generate the grid
+        assertTrue(intersections>10);
+
+        //test if we get 8 different orentations
+
+        
+
     }
 
-    public void testcalculatechisquared(){
-
-    }
 }
