@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 public class Grid {
     public ArrayList<WordLocation> wordIndices = new ArrayList<>();
+    private HashMap<String, Integer> directionCounts = new HashMap<>();
     public GridItem[][] grid;
 
     private static long seed = 1234567L;                    //Generates a consitant for repeatablility of bugs
@@ -52,6 +53,8 @@ public class Grid {
             } while (horizontal == 0 && vertical == 0); // both can not be zero
 
             if (canPlaceWord(word, row, col, horizontal, vertical)) {
+                String directionKey = horizontal + "," + vertical;
+                directionCounts.put(directionKey, directionCounts.getOrDefault(directionKey, 0) + 1);//count the orentaions 
                 var location = new WordLocation(word, new Point(row, col), null);
                 placeWord(word, row, col, horizontal, vertical, location);
                 wordIndices.add(location);
@@ -151,6 +154,21 @@ public class Grid {
         System.out.println(actualFrequencies.toString());
         return chiSquared;
     }
+    //standard deviation on our word directioncounts
+    public double calcstddiveation(HashMap<String, Integer> directionCounts){
+        double sum = 0.0;
+        for(double values: directionCounts.values() ){
+            sum += values;
+        }
+        double mean = sum / directionCounts.size();
+
+        double stddeveation = 0.0;
+        for(double values : directionCounts.values()){
+            stddeveation += Math.pow(values - mean, 2);
+        }
+
+        return Math.sqrt(stddeveation/directionCounts.size());
+    }
 
     public void printGrid() {
         for (int i = 0; i < grid.length; i++) {
@@ -167,6 +185,7 @@ public class Grid {
             System.out.println("Word at (" + location.start.x + ", " + location.start.y + 
                                ") to (" + location.end.x + ", " + location.end.y + ")");
         }
+        System.out.println("standard deviation"+calcstddiveation(directionCounts));
     }
 
     public WordLocation checkStartEnd(Point start, Point end) {
