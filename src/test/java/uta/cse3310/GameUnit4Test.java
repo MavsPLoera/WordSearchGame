@@ -39,23 +39,23 @@ public class GameUnit4Test extends TestCase
         testPlayers.add(p1);
         testPlayers.add(p2);
 
-        
+
+        Grid.useSeed = true;
         Game testGame = new Game(testPlayers);
-        testGame.grid.useSeed = true;
         int wordListSize = testGame.grid.wordIndices.size();
         
         Point point = new Point();
         Point point2 = new Point();
-        point.x = 16;
-        point.y = 11;
-        point2.x = 11;
-        point2.y = 16;
+        point.x = 7;
+        point.y = 0;
+        point2.x = 12;
+        point2.y = 0;
 
         //Should not work
         testGame.input( testPlayers.get(0), point2);
         testGame.input( testPlayers.get(0), point);
-        assertTrue(testGame.grid.grid[16][11].foundBy.size() == 0);
-        assertTrue(testGame.grid.grid[13][14].foundBy.size() == 0);
+        assertEquals(testGame.grid.grid[7][0].foundBy.size(), 0);
+        assertEquals(testGame.grid.grid[12][0].foundBy.size(), 0);
 
         //User selecting start and end of the word
         testGame.input( testPlayers.get(0), point);
@@ -64,10 +64,9 @@ public class GameUnit4Test extends TestCase
 
         //Checks if other players selectedPoint was removed when word was found. 
         assertTrue(testPlayers.get(1).selectedPoint.equals(point));
-        assertTrue(testGame.grid.grid[16][11].foundBy.contains(0) == true);
-        assertTrue(testGame.grid.grid[13][14].foundBy.contains(0) == true);
-        assertTrue(testGame.grid.grid[11][16].foundBy.contains(0) == true);
-        assertTrue(testGame.grid.wordIndices.size() == (wordListSize-1));
-        
+        assertTrue(testGame.grid.grid[7][0].foundBy.contains(0));
+        assertTrue(testGame.grid.grid[12][0].foundBy.contains(0));
+        assertTrue(testGame.grid.grid[10][0].foundBy.contains(0));
+        assertEquals(testGame.grid.wordIndices.size(), wordListSize-1);
     }
 }

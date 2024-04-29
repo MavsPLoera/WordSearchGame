@@ -39,6 +39,7 @@ public class GameUnit3Test extends TestCase
         testPlayers.add(p1);
         testPlayers.add(p2);
 
+        Grid.useSeed = true;
         Game testGame = new Game(testPlayers);
         p1.addToCurrentScore(20);
         p2.addToCurrentScore(10);
