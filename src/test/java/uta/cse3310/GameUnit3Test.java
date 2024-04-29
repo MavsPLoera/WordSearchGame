@@ -40,7 +40,6 @@ public class GameUnit3Test extends TestCase
         testPlayers.add(p2);
 
         Game testGame = new Game(testPlayers);
-        testGame.grid.useSeed = true;
         p1.addToCurrentScore(20);
         p2.addToCurrentScore(10);
         assertTrue(p1.currentGameScore == 20);

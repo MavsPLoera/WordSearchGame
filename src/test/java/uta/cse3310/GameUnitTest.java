@@ -45,7 +45,6 @@ public class GameUnitTest extends TestCase
         testPlayers.add(p2);
 
         Game testGame = new Game(testPlayers);
-        testGame.grid.useSeed = true;
         Point point = new Point();
         point.x = 2;
         point.y = 2;
