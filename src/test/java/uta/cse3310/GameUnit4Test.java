@@ -41,8 +41,8 @@ public class GameUnit4Test extends TestCase
 
         
         Game testGame = new Game(testPlayers);
-        int wordListSize = testGame.grid.wordIndices.size();
         testGame.grid.useSeed = true;
+        int wordListSize = testGame.grid.wordIndices.size();
         
         Point point = new Point();
         Point point2 = new Point();
