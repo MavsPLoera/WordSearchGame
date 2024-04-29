@@ -1,4 +1,4 @@
-var serverUrl = "ws://sp24.cse3310.org:" + (Number(location.port) + 100);
+var serverUrl = "ws://" + location.hostname + ":" + (Number(location.port) + 100);
 
 var connection = new WebSocket(serverUrl);
 showLoginPage();
