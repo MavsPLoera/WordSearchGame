@@ -64,9 +64,9 @@ public class GameUnit4Test extends TestCase
 
         //Checks if other players selectedPoint was removed when word was found. 
         assertTrue(testPlayers.get(1).selectedPoint.equals(point));
-        assertTrue(testGame.grid.grid[16][11].foundBy.contains(0));
-        assertTrue(testGame.grid.grid[13][14].foundBy.contains(0));
-        assertTrue(testGame.grid.grid[11][16].foundBy.contains(0));
+        assertTrue(testGame.grid.grid[16][11].foundBy.contains(0) == true);
+        assertTrue(testGame.grid.grid[13][14].foundBy.contains(0) == true);
+        assertTrue(testGame.grid.grid[11][16].foundBy.contains(0) == true);
         assertTrue(testGame.grid.wordIndices.size() == (wordListSize-1));
         
     }
