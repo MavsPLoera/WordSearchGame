@@ -11,7 +11,7 @@ Information on deployment:
 
 https://www.programonaut.com/how-to-deploy-a-git-repository-to-a-server-using-github-actions/
 
-Link to the server that runs all the projects:
+Link to the server that runs all the projects (Spring 2024):
 
 http://cse3310.org/
 
