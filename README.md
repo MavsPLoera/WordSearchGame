@@ -11,8 +11,10 @@ Information on deployment:
 
 https://www.programonaut.com/how-to-deploy-a-git-repository-to-a-server-using-github-actions/
 
-Link to the server that runs all the projects
+Link to the server that runs all the projects:
+
 http://cse3310.org/
 
 Link to the word search game we made (Group 29):
+
 http://sp24.cse3310.org:9029/
